@@ -19,7 +19,7 @@ export default function Dashboard() {
   const filteredTasks = filterByBody(complianceTasks);
   const filteredIncidents = filterByBody(incidents);
   const filteredTraining = filterByBody(training);
-  const filteredTrainingNames = new Set(filteredTraining.map(t => t.course));
+  const filteredTrainingNames = new Set(filteredTraining.map(t => t.course || t.title));
   const filteredRecords = trainingRecordsList.filter(r => filteredTrainingNames.has(r.course));
 
   // Compute filtered stats
@@ -200,8 +200,8 @@ export default function Dashboard() {
             {attentionTasks.length > 0 ? attentionTasks.slice(0, 5).map(task => (
               <div key={task.id} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate">{task.task}</p>
-                  <p className="text-xs text-slate-500">{task.assignedTo} · Due {task.dueDate}</p>
+                  <p className="text-sm font-medium text-slate-900 truncate">{task.task || task.title || '—'}</p>
+                  <p className="text-xs text-slate-500">{task.assignedTo || task.assignedToRole || '—'} · Due {task.dueDate}</p>
                 </div>
                 <div className="ml-3">
                   <StatusBadge status={task.status} />

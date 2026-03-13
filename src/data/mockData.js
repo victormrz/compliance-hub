@@ -41,6 +41,7 @@ export const policies = seedPolicies.map((p, i) => ({
   lastReviewed: "2025-11-01",
   nextReview: "2026-11-01",
   owner: p.ownerRole,
+  ownerRole: p.ownerRole,
   status: p.status,
   standardRefs: p.standardRefs || [],
 }));

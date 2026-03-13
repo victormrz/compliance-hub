@@ -34,8 +34,8 @@ export default function Standards() {
   const tabFiltered = filter === 'All Standards' ? globalFiltered : globalFiltered.filter(s => s.body === bodyMap[filter]);
   const q = search.toLowerCase();
   const filtered = q ? tabFiltered.filter(s =>
-    (s.code || '').toLowerCase().includes(q) ||
-    (s.name || '').toLowerCase().includes(q) ||
+    (s.code || s.title || '').toLowerCase().includes(q) ||
+    (s.name || s.standardName || '').toLowerCase().includes(q) ||
     (s.category || '').toLowerCase().includes(q) ||
     (s.body || '').toLowerCase().includes(q)
   ) : tabFiltered;
@@ -68,7 +68,7 @@ export default function Standards() {
   };
 
   const handleDelete = async (std) => {
-    if (confirm(`Delete standard ${std.code}?`)) {
+    if (confirm(`Delete standard ${std.code || std.title}?`)) {
       await remove(std.id);
     }
   };
@@ -163,8 +163,8 @@ export default function Standards() {
                         <Library size={14} className="text-indigo-500" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-slate-900">{std.code}</p>
-                        <p className="text-xs text-slate-500">{std.name}</p>
+                        <p className="text-sm font-semibold text-slate-900">{std.code || std.title || '—'}</p>
+                        <p className="text-xs text-slate-500">{std.name || std.standardName || '—'}</p>
                       </div>
                     </div>
                   </td>
@@ -200,7 +200,7 @@ export default function Standards() {
         open={modalOpen}
         onClose={() => { setModalOpen(false); setEditItem(null); }}
         onSubmit={handleSubmit}
-        title={editItem ? `Edit Standard: ${editItem.code}` : 'Add Standard'}
+        title={editItem ? `Edit Standard: ${editItem.code || editItem.title}` : 'Add Standard'}
         fields={standardFields}
         initialData={editItem || {}}
         loading={loading}

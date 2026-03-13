@@ -29,6 +29,59 @@ async function getSiteId() {
 }
 
 // ═══════════════════════════════════════════
+// Field Normalization: SharePoint PascalCase → app camelCase
+// ═══════════════════════════════════════════
+
+// Known array fields stored as delimited strings in SharePoint
+const ARRAY_FIELDS = new Set([
+  'standardRefs', 'evidenceRequired', 'applicablePrograms',
+]);
+
+// SharePoint column → app field aliases (where names don't match)
+const FIELD_ALIASES = {
+  StandardName: 'name',
+  RequirementCategory: 'category',
+  PolicySeries: 'series',
+};
+
+// Proper PascalCase → camelCase (handles acronyms: CARFStandard → carfStandard)
+function toCamelCase(str) {
+  return str
+    .replace(/^([A-Z]+)([A-Z][a-z])/, (_, acr, rest) => acr.toLowerCase() + rest)
+    .replace(/^[A-Z]/, c => c.toLowerCase());
+}
+
+function normalizeFields(fields) {
+  const out = {};
+  for (const [key, value] of Object.entries(fields)) {
+    // Skip SharePoint internal fields
+    if (key.startsWith('@odata') || key.startsWith('_')) continue;
+
+    // Keep original PascalCase key
+    out[key] = value;
+
+    // Add camelCase alias
+    const camel = toCamelCase(key);
+    if (camel !== key) out[camel] = value;
+
+    // Add explicit alias if one exists
+    const alias = FIELD_ALIASES[key];
+    if (alias) out[alias] = value;
+
+    // Convert delimited strings → arrays for known fields
+    const checkKey = camel !== key ? camel : key;
+    if (ARRAY_FIELDS.has(checkKey) && typeof value === 'string') {
+      const delimiter = value.includes(';') ? /;\s*/ : /,\s*/;
+      const arr = value.split(delimiter).map(s => s.trim()).filter(Boolean);
+      out[key] = arr;
+      if (camel !== key) out[camel] = arr;
+      if (alias) out[alias] = arr;
+    }
+  }
+  return out;
+}
+
+// ═══════════════════════════════════════════
 // Generic SharePoint List CRUD Operations
 // ═══════════════════════════════════════════
 
@@ -56,7 +109,7 @@ export async function getListItems(listName, options = {}) {
   const result = await request.get();
   return result.value.map(item => ({
     id: item.id,
-    ...item.fields,
+    ...normalizeFields(item.fields || {}),
   }));
 }
 
@@ -66,7 +119,7 @@ export async function createListItem(listName, fields) {
   const result = await graphClient
     .api(`/sites/${id}/lists/${listName}/items`)
     .post({ fields });
-  return { id: result.id, ...result.fields };
+  return { id: result.id, ...normalizeFields(result.fields || {}) };
 }
 
 // Update a list item

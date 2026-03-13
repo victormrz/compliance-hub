@@ -7,9 +7,7 @@ import seedCrosswalk from './seeds/crosswalk.json';
 
 // ── Facilities (manually provisioned by Victor) ──
 export const facilities = [
-  { id: 1, name: "Roaring Brook Recovery", type: "SUD Residential", address: "123 Recovery Ln, Lexington, KY", status: "Active", beds: 48, license: "AODE-2024-0412" },
-  { id: 2, name: "Roaring Brook Outpatient", type: "IOP/PHP", address: "456 Wellness Dr, Lexington, KY", status: "Active", beds: 0, license: "AODE-2024-0413" },
-  { id: 3, name: "Roaring Brook Sober Living", type: "Sober Living", address: "789 Hope Ave, Lexington, KY", status: "Active", beds: 24, license: "AODE-2024-0414" },
+  { id: 1, name: "Roaring Brook Recovery", type: "SUD Outpatient", address: "600 Perimeter Dr, Lexington, KY 40517", status: "Active", beds: 0, license: "AODE-2024-0412" },
 ];
 
 // ── Licenses (mock — Victor provisions manually) ──
@@ -17,9 +15,8 @@ export const licenses = [
   { id: 1, name: "AODE License", facility: "Roaring Brook Recovery", type: "State License", issueDate: "2024-06-01", expirationDate: "2026-06-01", status: "Active", daysLeft: 445 },
   { id: 2, name: "CARF Accreditation", facility: "Roaring Brook Recovery", type: "Accreditation", issueDate: "2024-01-15", expirationDate: "2027-01-15", status: "Active", daysLeft: 673 },
   { id: 3, name: "Fire Marshal Permit", facility: "Roaring Brook Recovery", type: "Safety Permit", issueDate: "2025-03-01", expirationDate: "2026-03-31", status: "Critical", daysLeft: 18 },
-  { id: 4, name: "Food Service Permit", facility: "Roaring Brook Recovery", type: "Health Permit", issueDate: "2024-01-10", expirationDate: "2026-01-10", status: "Expired", daysLeft: -62 },
-  { id: 5, name: "DEA Registration", facility: "Roaring Brook Recovery", type: "Federal License", issueDate: "2024-07-01", expirationDate: "2027-07-01", status: "Active", daysLeft: 840 },
-  { id: 6, name: "Business License", facility: "Roaring Brook Outpatient", type: "Business License", issueDate: "2025-01-01", expirationDate: "2026-12-31", status: "Active", daysLeft: 293 },
+  { id: 4, name: "DEA Registration", facility: "Roaring Brook Recovery", type: "Federal License", issueDate: "2024-07-01", expirationDate: "2027-07-01", status: "Active", daysLeft: 840 },
+  { id: 5, name: "Business License", facility: "Roaring Brook Recovery", type: "Business License", issueDate: "2025-01-01", expirationDate: "2026-12-31", status: "Active", daysLeft: 293 },
 ];
 
 // ── Standards (from seed JSON) ──
@@ -94,16 +91,27 @@ export const complianceTasks = seedTasks.map((t, i) => ({
 // ── Crosswalk (new export from seed JSON) ──
 export const crosswalk = seedCrosswalk;
 
-// ── Staff (mock — Victor provisions manually) ──
+// ── Staff (real roster — Roaring Brook Recovery at 600 Perimeter Dr) ──
 export const staff = [
-  { id: 1, name: "Victor Rivera", title: "Executive Director", department: "Management", hireDate: "2023-01-15", status: "Active", supervisor: null, credentialsComplete: true, trainingComplete: true, phone: "(859) 555-0100" },
-  { id: 2, name: "Sarah Williams", title: "Clinical Director", department: "Clinical", hireDate: "2023-03-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: true, phone: "(859) 555-0101" },
-  { id: 3, name: "Mike Johnson", title: "Facilities Manager", department: "Operations", hireDate: "2023-06-15", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, phone: "(859) 555-0102" },
-  { id: 4, name: "Jennifer Davis", title: "Compliance Officer", department: "Compliance", hireDate: "2023-09-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: true, phone: "(859) 555-0103" },
-  { id: 5, name: "David Chen", title: "Licensed Counselor (LPCC)", department: "Clinical", hireDate: "2024-01-15", status: "Active", supervisor: "Sarah Williams", credentialsComplete: true, trainingComplete: true, phone: "(859) 555-0104" },
-  { id: 6, name: "Maria Santos", title: "Registered Nurse (RN)", department: "Nursing", hireDate: "2024-03-01", status: "Active", supervisor: "Sarah Williams", credentialsComplete: false, trainingComplete: true, phone: "(859) 555-0105" },
-  { id: 7, name: "James Wilson", title: "Peer Support Specialist", department: "Peer Support", hireDate: "2024-06-01", status: "Active", supervisor: "Sarah Williams", credentialsComplete: true, trainingComplete: false, phone: "(859) 555-0106" },
-  { id: 8, name: "Ashley Thompson", title: "Administrative Coordinator", department: "Administrative", hireDate: "2024-08-15", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: true, phone: "(859) 555-0107" },
+  // Salaried
+  { id: 1, name: "Victor Rivera", title: "Executive Director", department: "Management", hireDate: "2023-01-15", status: "Active", supervisor: null, credentialsComplete: true, trainingComplete: true, employmentType: "Salaried" },
+  { id: 2, name: "Alison Grigsby", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 3, name: "Amber Ramsay", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 4, name: "Dave Thomas", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 5, name: "Harold Kantar", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 6, name: "Hillary Nolan", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 7, name: "Jarrod Chase", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 8, name: "Kara Brown-Flod", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 9, name: "Keith Rapp", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 10, name: "Kelsey Hess", title: "Staff", department: "Administrative", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 11, name: "Matthew Otto", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 12, name: "Rebecca Milton", title: "Staff", department: "Administrative", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 13, name: "Tiffany Spradlin", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 14, name: "Laurel Yoder", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 15, name: "Mercedes Hensley", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  // Hourly
+  { id: 16, name: "Carl Quick", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: false, trainingComplete: false, employmentType: "Hourly" },
+  { id: 17, name: "Mary Henson", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: false, trainingComplete: false, employmentType: "Hourly" },
 ];
 
 // ── Credentials (mock — Victor provisions manually) ──

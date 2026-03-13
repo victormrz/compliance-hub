@@ -18,7 +18,10 @@ const msalConfig = {
   },
 };
 
-const scopes = ["https://graph.microsoft.com/Sites.Manage.All"];
+const scopes = [
+  "https://graph.microsoft.com/Sites.Manage.All",
+  "https://graph.microsoft.com/Sites.ReadWrite.All",
+];
 
 let cachedToken = null;
 

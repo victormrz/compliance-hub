@@ -3,7 +3,7 @@ import { GraduationCap, Plus, Pencil, Wifi, WifiOff } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
-import { training as mockTraining, trainingRecords } from '../data/mockData';
+import { training as mockTraining, trainingRecords as mockTrainingRecords } from '../data/mockData';
 import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
 
@@ -11,6 +11,8 @@ const trainingFields = [
   { key: 'course', label: 'Course Name', type: 'text', required: true, placeholder: 'e.g., HIPAA Privacy & Security' },
   { key: 'category', label: 'Category', type: 'select', required: true, options: ['Compliance', 'Clinical', 'Safety', 'HR', 'Leadership'] },
   { key: 'frequency', label: 'Frequency', type: 'select', required: true, options: ['Annual', 'Semi-Annual', 'Quarterly', 'One-Time', 'As Needed'] },
+  { key: 'providedTo', label: 'Provided To', type: 'select', required: true, options: ['Personnel', 'Persons Served', 'Personnel and Persons Served', 'Volunteers', 'All Stakeholders'] },
+  { key: 'competencyBased', label: 'Competency-Based', type: 'select', required: true, options: ['Yes', 'No'] },
   { key: 'duration', label: 'Duration', type: 'text', placeholder: 'e.g., 2 hours' },
   { key: 'standardRefs', label: 'Standard References', type: 'tags', placeholder: 'HR.01.04.01, EC.02.01.01' },
   { key: 'status', label: 'Status', type: 'select', required: true, options: ['Active', 'Draft', 'Archived'] },
@@ -19,6 +21,7 @@ const trainingFields = [
 export default function Training() {
   const { filterByBody } = useAccreditation();
   const { data: trainingCourses, loading, isLive, create, update } = useSharePointData('Training', mockTraining);
+  const { data: trainingRecordsList } = useSharePointData('TrainingRecords', mockTrainingRecords);
   const [tab, setTab] = useState('courses');
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -26,7 +29,7 @@ export default function Training() {
 
   const bodyFilteredCourses = filterByBody(trainingCourses);
   const bodyFilteredNames = new Set(bodyFilteredCourses.map(c => c.course));
-  const bodyFilteredRecords = trainingRecords.filter(r => bodyFilteredNames.has(r.course));
+  const bodyFilteredRecords = trainingRecordsList.filter(r => bodyFilteredNames.has(r.course));
 
   const q = search.toLowerCase();
   const filteredCourses = q ? bodyFilteredCourses.filter(t =>

@@ -1,0 +1,569 @@
+[
+  {
+    "policyNumber": "HR-00",
+    "title": "Mission Statement",
+    "series": "HR",
+    "category": "Leadership",
+    "ownerRole": "Executive Director",
+    "standardRefs": ["1.E.2", "1.B.1"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-01",
+    "title": "Appearance and Dress Code",
+    "series": "HR",
+    "category": "Human Resources",
+    "ownerRole": "HR Director",
+    "standardRefs": ["1.I.1"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-02",
+    "title": "Attendance",
+    "series": "HR",
+    "category": "Human Resources",
+    "ownerRole": "HR Director",
+    "standardRefs": ["1.I.1"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-03",
+    "title": "Tobacco Use Policy",
+    "series": "HR",
+    "category": "Health and Safety",
+    "ownerRole": "Safety Officer",
+    "standardRefs": ["1.H.2", "2.A.25"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-04",
+    "title": "Employee Orientation and Training",
+    "series": "HR",
+    "category": "Workforce Development",
+    "ownerRole": "HR Director",
+    "standardRefs": ["1.I.5", "1.I.7"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-05",
+    "title": "Infection Prevention and Control",
+    "series": "HR",
+    "category": "Health and Safety",
+    "ownerRole": "Nursing Director",
+    "standardRefs": ["1.H.12"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-06",
+    "title": "Staff Code of Conduct",
+    "series": "HR",
+    "category": "Leadership",
+    "ownerRole": "Compliance Officer",
+    "standardRefs": ["1.A.6"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-07",
+    "title": "Social Media Policy",
+    "series": "HR",
+    "category": "Technology",
+    "ownerRole": "HR Director",
+    "standardRefs": ["1.J.3", "1.K.4"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-08",
+    "title": "Employment of Family Members and Felons",
+    "series": "HR",
+    "category": "Human Resources",
+    "ownerRole": "HR Director",
+    "standardRefs": ["1.I.4", "1.C.2"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-09",
+    "title": "Workflow Procedures",
+    "series": "HR",
+    "category": "Leadership",
+    "ownerRole": "Executive Director",
+    "standardRefs": ["1.A.5", "2.A.1"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-10",
+    "title": "Release of Information",
+    "series": "HR",
+    "category": "Privacy and Confidentiality",
+    "ownerRole": "Compliance Officer",
+    "standardRefs": ["2.E.7", "1.K.4"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-11",
+    "title": "Employee Drug Testing",
+    "series": "HR",
+    "category": "Human Resources",
+    "ownerRole": "HR Director",
+    "standardRefs": ["1.I.4"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-12",
+    "title": "Outreach Policy",
+    "series": "HR",
+    "category": "Program Structure",
+    "ownerRole": "Executive Director",
+    "standardRefs": ["1.E.3", "2.A.3"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-13",
+    "title": "Emergency Response Plan",
+    "series": "HR",
+    "category": "Health and Safety",
+    "ownerRole": "Safety Officer",
+    "standardRefs": ["1.H.5", "1.H.7", "1.H.8"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-14",
+    "title": "Alumni and Volunteer Requirements",
+    "series": "HR",
+    "category": "Workforce Development",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.C.6", "1.I.4"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-15",
+    "title": "Corporate Compliance Program",
+    "series": "HR",
+    "category": "Leadership",
+    "ownerRole": "Compliance Officer",
+    "standardRefs": ["1.A.7"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-16",
+    "title": "Strategic Plan",
+    "series": "HR",
+    "category": "Strategic Planning",
+    "ownerRole": "Executive Director",
+    "standardRefs": ["1.B.1", "1.B.2"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-17",
+    "title": "Internal Controls",
+    "series": "HR",
+    "category": "Financial Management",
+    "ownerRole": "Executive Director",
+    "standardRefs": ["1.F.11", "1.F.7"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-18",
+    "title": "Risk Management Plan",
+    "series": "HR",
+    "category": "Risk Management",
+    "ownerRole": "Compliance Officer",
+    "standardRefs": ["1.G.1", "1.G.2", "1.G.3", "1.G.4"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-19",
+    "title": "Technology Policy",
+    "series": "HR",
+    "category": "Technology",
+    "ownerRole": "IT Director",
+    "standardRefs": ["1.J.2", "1.J.3", "1.J.4", "1.J.5", "1.J.6"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-20",
+    "title": "Fire Drill Emergency Evacuation Plan",
+    "series": "HR",
+    "category": "Health and Safety",
+    "ownerRole": "Safety Officer",
+    "standardRefs": ["1.H.5", "1.H.7"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-21",
+    "title": "Health and Safety Inspection",
+    "series": "HR",
+    "category": "Health and Safety",
+    "ownerRole": "Safety Officer",
+    "standardRefs": ["1.H.11", "1.H.2"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-22",
+    "title": "Hazardous Waste Disposal",
+    "series": "HR",
+    "category": "Health and Safety",
+    "ownerRole": "Safety Officer",
+    "standardRefs": ["1.H.10"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-23",
+    "title": "Supervision of Direct Services",
+    "series": "HR",
+    "category": "Workforce Development",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["1.I.6", "2.C.7"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-24",
+    "title": "Workforce Planning",
+    "series": "HR",
+    "category": "Workforce Development",
+    "ownerRole": "HR Director",
+    "standardRefs": ["1.I.1", "1.I.3"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-25",
+    "title": "Grievance Policy",
+    "series": "HR",
+    "category": "Human Resources",
+    "ownerRole": "HR Director",
+    "standardRefs": ["1.K.3"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-26",
+    "title": "Secure Building Policy",
+    "series": "HR",
+    "category": "Health and Safety",
+    "ownerRole": "Safety Officer",
+    "standardRefs": ["2.A.23", "1.H.5"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-27",
+    "title": "Employee Evaluations",
+    "series": "HR",
+    "category": "Workforce Development",
+    "ownerRole": "HR Director",
+    "standardRefs": ["1.I.8"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "HR-28",
+    "title": "Legal and Regulatory Requirements",
+    "series": "HR",
+    "category": "Legal Requirements",
+    "ownerRole": "Compliance Officer",
+    "standardRefs": ["1.C.2"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-01",
+    "title": "Participant Rights and Grievance Procedures",
+    "series": "TS",
+    "category": "Rights of Persons Served",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["1.K.1", "1.K.2", "1.K.3"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-02",
+    "title": "Duty to Warn",
+    "series": "TS",
+    "category": "Legal Requirements",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["1.C.2", "1.G.4"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-03",
+    "title": "Admission Agreement and Consent",
+    "series": "TS",
+    "category": "Screening and Access",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.A.8", "2.A.9"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-04",
+    "title": "Participant Drug Testing",
+    "series": "TS",
+    "category": "Program Structure",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.A.15", "2.B.14"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-05",
+    "title": "Programming Content",
+    "series": "TS",
+    "category": "Program Structure",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.A.26", "2.A.27", "2.A.28"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-06",
+    "title": "Mandated Reporting",
+    "series": "TS",
+    "category": "Legal Requirements",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["1.C.2", "1.G.4"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-07",
+    "title": "Admission, Readmission, and Intake",
+    "series": "TS",
+    "category": "Screening and Access",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.A.8", "2.A.9", "2.A.11"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-08",
+    "title": "Discharge Criteria",
+    "series": "TS",
+    "category": "Transition and Discharge",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.A.33", "2.D.1", "2.D.3"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-09",
+    "title": "Confidentiality Policy",
+    "series": "TS",
+    "category": "Privacy and Confidentiality",
+    "ownerRole": "Compliance Officer",
+    "standardRefs": ["1.K.4", "42CFR2.12", "42CFR2.13"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-10",
+    "title": "Privacy Policy",
+    "series": "TS",
+    "category": "Privacy and Confidentiality",
+    "ownerRole": "Compliance Officer",
+    "standardRefs": ["45CFR164.502", "45CFR164.530"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-11",
+    "title": "Drug-Free Environment",
+    "series": "TS",
+    "category": "Health and Safety",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.A.25", "2.A.23"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-12",
+    "title": "Quality Improvement Program",
+    "series": "TS",
+    "category": "Quality Management",
+    "ownerRole": "QI Coordinator",
+    "standardRefs": ["2.F.1", "2.F.2", "2.F.3"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-13",
+    "title": "Treatment Planning",
+    "series": "TS",
+    "category": "Person-Centered Plan",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.C.1", "2.C.2", "2.C.3", "2.C.4"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-14",
+    "title": "Medication Storage and Administration",
+    "series": "TS",
+    "category": "Medication Use",
+    "ownerRole": "Nursing Director",
+    "standardRefs": ["1.H.13", "1.H.14", "1.H.15", "1.H.16"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-15",
+    "title": "Critical Incidents",
+    "series": "TS",
+    "category": "Risk Management",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["1.G.4"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-16",
+    "title": "Medication Errors",
+    "series": "TS",
+    "category": "Medication Use",
+    "ownerRole": "Nursing Director",
+    "standardRefs": ["1.H.16", "1.H.14"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-17",
+    "title": "Outside Referrals",
+    "series": "TS",
+    "category": "Transition and Discharge",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.A.32", "2.D.6"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-18",
+    "title": "Participant Satisfaction Survey",
+    "series": "TS",
+    "category": "Quality Management",
+    "ownerRole": "QI Coordinator",
+    "standardRefs": ["1.M.7", "2.F.10"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-19",
+    "title": "Clinical Records",
+    "series": "TS",
+    "category": "Records Management",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.E.1", "2.E.2", "2.E.3", "2.E.5"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-20",
+    "title": "Medication Assisted Treatment",
+    "series": "TS",
+    "category": "Medication Use",
+    "ownerRole": "Medical Director",
+    "standardRefs": ["2.A.29", "1.H.13"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-21",
+    "title": "Behavior Modification",
+    "series": "TS",
+    "category": "Nonviolent Practices",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.G.1", "3.E.27"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-22",
+    "title": "Special Treatment Interventions",
+    "series": "TS",
+    "category": "Program Structure",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.A.27", "2.G.1"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-23",
+    "title": "Unsafe Behavior",
+    "series": "TS",
+    "category": "Risk Management",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["1.G.4", "2.G.1"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-24",
+    "title": "Participant Attendance",
+    "series": "TS",
+    "category": "Program Structure",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.A.26"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-25",
+    "title": "Ethics and Boundaries for Peer Support Specialists",
+    "series": "TS",
+    "category": "Workforce Development",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["1.A.6", "3.P.3", "3.P.9"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-26",
+    "title": "Telehealth Policy",
+    "series": "TS",
+    "category": "Technology",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["1.J.7", "1.J.8"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-27",
+    "title": "Case Management",
+    "series": "TS",
+    "category": "Person-Centered Plan",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.C.4", "2.C.5", "2.A.20"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-28",
+    "title": "Input from Persons Served",
+    "series": "TS",
+    "category": "Rights of Persons Served",
+    "ownerRole": "QI Coordinator",
+    "standardRefs": ["1.A.5", "1.M.7", "2.F.10"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-29",
+    "title": "Cell Phone Policy",
+    "series": "TS",
+    "category": "Program Structure",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.A.25"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-30",
+    "title": "Sleeping in Group Policy",
+    "series": "TS",
+    "category": "Program Structure",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.A.26"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "TS-31",
+    "title": "Neurofeedback Policy",
+    "series": "TS",
+    "category": "Program Structure",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["2.A.27", "1.J.8"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "COVID-01",
+    "title": "COVID-19 Policy",
+    "series": "COVID",
+    "category": "Health and Safety",
+    "ownerRole": "Safety Officer",
+    "standardRefs": ["1.H.12", "1.H.5"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "CCP-01",
+    "title": "Cultural Competency Plan",
+    "series": "CCP",
+    "category": "Strategic Planning",
+    "ownerRole": "Clinical Director",
+    "standardRefs": ["1.B.5"],
+    "status": "Current"
+  },
+  {
+    "policyNumber": "ORG-01",
+    "title": "Organizational Chart",
+    "series": "ORG",
+    "category": "Leadership",
+    "ownerRole": "Executive Director",
+    "standardRefs": ["2.A.1", "1.I.1"],
+    "status": "Current"
+  }
+]

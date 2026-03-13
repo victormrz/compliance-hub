@@ -2,18 +2,25 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Building2, FileKey, Users, ClipboardCheck, AlertCircle, AlertTriangle } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import StatusBadge from '../components/StatusBadge';
-import { licenses, incidents, complianceTasks, facilities, staff, trainingRecords, training } from '../data/mockData';
+import { complianceTasks as mockTasks, licenses as mockLicenses, incidents as mockIncidents, training as mockTraining, trainingRecords as mockTrainingRecords, facilities as mockFacilities, staff as mockStaff } from '../data/mockData';
 import { useAccreditation } from '../hooks/useAccreditation';
+import { useSharePointData } from '../hooks/useSharePointData';
 
 export default function Dashboard() {
   const { filterByBody, body, bodyLabels } = useAccreditation();
+
+  const { data: complianceTasks } = useSharePointData('ComplianceTasks', mockTasks);
+  const { data: licenses } = useSharePointData('Licenses', mockLicenses);
+  const { data: incidents } = useSharePointData('Incidents', mockIncidents);
+  const { data: training } = useSharePointData('Training', mockTraining);
+  const { data: trainingRecordsList } = useSharePointData('TrainingRecords', mockTrainingRecords);
 
   // Filter data by selected accreditation body
   const filteredTasks = filterByBody(complianceTasks);
   const filteredIncidents = filterByBody(incidents);
   const filteredTraining = filterByBody(training);
   const filteredTrainingNames = new Set(filteredTraining.map(t => t.course));
-  const filteredRecords = trainingRecords.filter(r => filteredTrainingNames.has(r.course));
+  const filteredRecords = trainingRecordsList.filter(r => filteredTrainingNames.has(r.course));
 
   // Compute filtered stats
   const expiredLicenses = licenses.filter(l => l.status === "Expired").length;
@@ -127,9 +134,9 @@ export default function Dashboard() {
 
       {/* Stat Cards Row */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-        <StatCard label="Facilities" value={facilities.length} icon={Building2} color="indigo" />
+        <StatCard label="Facilities" value={mockFacilities.length} icon={Building2} color="indigo" />
         <StatCard label="Active Licenses" value={licenses.filter(l => l.status === "Active").length} icon={FileKey} color="green" />
-        <StatCard label="Active Staff" value={staff.filter(s => s.status === "Active").length} icon={Users} color="blue" />
+        <StatCard label="Active Staff" value={mockStaff.filter(s => s.status === "Active").length} icon={Users} color="blue" />
         <StatCard label="Tasks Due" value={totalTasks - completedTasks} icon={ClipboardCheck} color="amber" />
         <StatCard label="Critical Incidents" value={filteredIncidents.filter(i => i.severity === "Critical").length} icon={AlertCircle} color="red" />
         <StatCard label="Overdue Tasks" value={overdueTasks} icon={AlertTriangle} color="red" />

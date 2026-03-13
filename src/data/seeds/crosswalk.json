@@ -1,0 +1,202 @@
+[
+  {
+    "title": "Fire Safety and Emergency Drills",
+    "carfStandard": "1.H.7",
+    "tjcStandard": "TJC.EC.02.03.01",
+    "stateRegulation": "908 KAR 1:370 §12",
+    "federalRegulation": null,
+    "policyRef": "HR-20",
+    "trainingRef": "Health and Safety Training",
+    "category": "Health and Safety"
+  },
+  {
+    "title": "Emergency Preparedness",
+    "carfStandard": "1.H.5",
+    "tjcStandard": "TJC.EC.02.06.01",
+    "stateRegulation": "908 KAR 1:370 §15",
+    "federalRegulation": null,
+    "policyRef": "HR-13",
+    "trainingRef": "Health and Safety Training",
+    "category": "Health and Safety"
+  },
+  {
+    "title": "Infection Prevention and Control",
+    "carfStandard": "1.H.12",
+    "tjcStandard": "TJC.IC.01.01.01",
+    "stateRegulation": "908 KAR 1:370 §14",
+    "federalRegulation": null,
+    "policyRef": "HR-05",
+    "trainingRef": "Infection and Communicable Disease Prevention",
+    "category": "Health and Safety"
+  },
+  {
+    "title": "Medication Management",
+    "carfStandard": "1.H.13",
+    "tjcStandard": "TJC.MM.01.01.01",
+    "stateRegulation": "908 KAR 1:370 §9",
+    "federalRegulation": null,
+    "policyRef": "TS-14",
+    "trainingRef": "Medication Administration Training",
+    "category": "Medication Use"
+  },
+  {
+    "title": "Medication-Assisted Treatment",
+    "carfStandard": "2.A.29",
+    "tjcStandard": "TJC.MM.01.01.01",
+    "stateRegulation": "908 KAR 1:372 §3",
+    "federalRegulation": null,
+    "policyRef": "TS-20",
+    "trainingRef": "Medication Administration Training",
+    "category": "Medication Use"
+  },
+  {
+    "title": "Patient Rights",
+    "carfStandard": "1.K.1",
+    "tjcStandard": "TJC.RI.01.01.01",
+    "stateRegulation": "908 KAR 1:370 §4",
+    "federalRegulation": null,
+    "policyRef": "TS-01",
+    "trainingRef": null,
+    "category": "Rights of Persons Served"
+  },
+  {
+    "title": "Privacy and Confidentiality (HIPAA)",
+    "carfStandard": "1.K.4",
+    "tjcStandard": null,
+    "stateRegulation": "908 KAR 1:370 §5",
+    "federalRegulation": "45 CFR 164.502",
+    "policyRef": "TS-10",
+    "trainingRef": null,
+    "category": "Privacy and Confidentiality"
+  },
+  {
+    "title": "SUD Confidentiality (42 CFR Part 2)",
+    "carfStandard": "1.K.4",
+    "tjcStandard": null,
+    "stateRegulation": null,
+    "federalRegulation": "42 CFR Part 2.12-2.31",
+    "policyRef": "TS-09",
+    "trainingRef": null,
+    "category": "Privacy and Confidentiality"
+  },
+  {
+    "title": "Critical Incident Reporting",
+    "carfStandard": "1.G.4",
+    "tjcStandard": null,
+    "stateRegulation": "908 KAR 1:370 §13",
+    "federalRegulation": null,
+    "policyRef": "TS-15",
+    "trainingRef": null,
+    "category": "Risk Management"
+  },
+  {
+    "title": "Personnel Qualifications and Credentialing",
+    "carfStandard": "1.I.3",
+    "tjcStandard": "TJC.HR.01.06.01",
+    "stateRegulation": "908 KAR 1:370 §3",
+    "federalRegulation": null,
+    "policyRef": "HR-24",
+    "trainingRef": null,
+    "category": "Human Resources"
+  },
+  {
+    "title": "Staff Orientation and Onboarding",
+    "carfStandard": "1.I.5",
+    "tjcStandard": "TJC.HR.01.02.01",
+    "stateRegulation": "908 KAR 1:370 §3",
+    "federalRegulation": null,
+    "policyRef": "HR-04",
+    "trainingRef": "Orientation and Onboarding",
+    "category": "Workforce Development"
+  },
+  {
+    "title": "Ongoing Competency Assessment",
+    "carfStandard": "1.I.7",
+    "tjcStandard": "TJC.HR.01.05.01",
+    "stateRegulation": null,
+    "federalRegulation": null,
+    "policyRef": "HR-27",
+    "trainingRef": "Workforce Development Training",
+    "category": "Workforce Development"
+  },
+  {
+    "title": "Treatment Planning",
+    "carfStandard": "2.C.1",
+    "tjcStandard": "TJC.PC.01.03.01",
+    "stateRegulation": "908 KAR 1:370 §8",
+    "federalRegulation": null,
+    "policyRef": "TS-13",
+    "trainingRef": null,
+    "category": "Person-Centered Plan"
+  },
+  {
+    "title": "Patient Assessment",
+    "carfStandard": "2.A.11",
+    "tjcStandard": "TJC.PC.01.02.01",
+    "stateRegulation": "908 KAR 1:370 §7",
+    "federalRegulation": null,
+    "policyRef": "TS-07",
+    "trainingRef": null,
+    "category": "Screening and Access"
+  },
+  {
+    "title": "Discharge Planning",
+    "carfStandard": "2.D.1",
+    "tjcStandard": "TJC.PC.04.01.01",
+    "stateRegulation": "908 KAR 1:370 §10",
+    "federalRegulation": null,
+    "policyRef": "TS-08",
+    "trainingRef": null,
+    "category": "Transition and Discharge"
+  },
+  {
+    "title": "Clinical Records Management",
+    "carfStandard": "2.E.1",
+    "tjcStandard": null,
+    "stateRegulation": "908 KAR 1:370 §6",
+    "federalRegulation": "45 CFR 164.308",
+    "policyRef": "TS-19",
+    "trainingRef": null,
+    "category": "Records Management"
+  },
+  {
+    "title": "Quality Improvement Program",
+    "carfStandard": "2.F.1",
+    "tjcStandard": "TJC.PI.01.01.01",
+    "stateRegulation": "908 KAR 1:370 §11",
+    "federalRegulation": null,
+    "policyRef": "TS-12",
+    "trainingRef": null,
+    "category": "Quality Management"
+  },
+  {
+    "title": "Environment of Care and Physical Plant",
+    "carfStandard": "1.H.11",
+    "tjcStandard": "TJC.EC.02.01.01",
+    "stateRegulation": "908 KAR 1:370 §12",
+    "federalRegulation": null,
+    "policyRef": "HR-21",
+    "trainingRef": "Health and Safety Training",
+    "category": "Environment of Care"
+  },
+  {
+    "title": "Cybersecurity and Data Protection",
+    "carfStandard": "1.J.5",
+    "tjcStandard": null,
+    "stateRegulation": null,
+    "federalRegulation": "45 CFR 164.312",
+    "policyRef": "HR-19",
+    "trainingRef": "Cybersecurity Awareness Training",
+    "category": "Technology"
+  },
+  {
+    "title": "Nonviolent Practices and Behavior Management",
+    "carfStandard": "2.G.1",
+    "tjcStandard": null,
+    "stateRegulation": null,
+    "federalRegulation": null,
+    "policyRef": "TS-21",
+    "trainingRef": "Behavioral Modeling Training",
+    "category": "Nonviolent Practices"
+  }
+]

@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Building2, FileKey, ClipboardCheck, AlertTriangle,
   Users, GraduationCap, FileText, AlertCircle, Library,
   Calendar, ChevronLeft, ChevronRight, Filter, LogOut,
-  Scale, ScrollText, Database
+  Scale, ScrollText, Database, GitCompareArrows, FileCheck2
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAccreditation } from '../hooks/useAccreditation';
@@ -23,6 +23,8 @@ const navItems = [
   { path: '/policies', label: 'Policies & Procedures', icon: FileText },
   { path: '/incidents', label: 'Incident Reporting', icon: AlertCircle },
   { path: '/standards', label: 'Standards Library', icon: Library },
+  { path: '/crosswalk', label: 'Crosswalk', icon: GitCompareArrows },
+  { path: '/evidence', label: 'Evidence Tracker', icon: FileCheck2 },
   { path: '/regulatory-changes', label: 'Regulatory Changes', icon: Scale },
   { path: '/audit-log', label: 'Audit Trail', icon: ScrollText },
   { path: '/data-backup', label: 'Data Backup', icon: Database },

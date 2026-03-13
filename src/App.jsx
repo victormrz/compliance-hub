@@ -19,6 +19,8 @@ import Standards from './pages/Standards';
 import AuditLog from './pages/AuditLog';
 import RegulatoryChanges from './pages/RegulatoryChanges';
 import DataBackup from './pages/DataBackup';
+import Crosswalk from './pages/Crosswalk';
+import Evidence from './pages/Evidence';
 
 export default function App() {
   const { isAuthenticated, loading } = useAuth();
@@ -64,6 +66,8 @@ export default function App() {
         <Route path="/standards" element={<ProtectedRoute path="/standards"><Standards /></ProtectedRoute>} />
         <Route path="/regulatory-changes" element={<ProtectedRoute path="/regulatory-changes"><RegulatoryChanges /></ProtectedRoute>} />
         <Route path="/audit-log" element={<ProtectedRoute path="/audit-log"><AuditLog /></ProtectedRoute>} />
+        <Route path="/crosswalk" element={<ProtectedRoute path="/crosswalk"><Crosswalk /></ProtectedRoute>} />
+        <Route path="/evidence" element={<ProtectedRoute path="/evidence"><Evidence /></ProtectedRoute>} />
         <Route path="/data-backup" element={<ProtectedRoute path="/data-backup"><DataBackup /></ProtectedRoute>} />
       </Route>
     </Routes>

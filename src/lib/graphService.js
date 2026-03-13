@@ -104,6 +104,13 @@ const LISTS = {
   regulatoryChanges: 'RegulatoryChanges',
   auditLog: 'AuditLog',
   dailyStaffing: 'DailyStaffing',
+  crosswalk: 'Crosswalk',
+  programApplicability: 'ProgramApplicability',
+  evidence: 'Evidence',
+  complianceTasks: 'ComplianceTasks',
+  trainingRecords: 'TrainingRecords',
+  contracts: 'Contracts',
+  facilities: 'Facilities',
 };
 
 // ── Standards ──
@@ -210,6 +217,44 @@ export async function createLigatureRisk(data) {
 export async function updateLigatureRisk(id, data) {
   return updateListItem(LISTS.ligatureRisk, id, data);
 }
+
+// ── Crosswalk ──
+export async function getCrosswalk() { return getListItems(LISTS.crosswalk); }
+export async function createCrosswalkItem(data) { return createListItem(LISTS.crosswalk, data); }
+export async function updateCrosswalkItem(id, data) { return updateListItem(LISTS.crosswalk, id, data); }
+export async function deleteCrosswalkItem(id) { return deleteListItem(LISTS.crosswalk, id); }
+
+// ── Program Applicability ──
+export async function getProgramApplicability() { return getListItems(LISTS.programApplicability); }
+export async function createProgramApplicability(data) { return createListItem(LISTS.programApplicability, data); }
+export async function updateProgramApplicability(id, data) { return updateListItem(LISTS.programApplicability, id, data); }
+
+// ── Evidence ──
+export async function getEvidence() { return getListItems(LISTS.evidence); }
+export async function createEvidence(data) { return createListItem(LISTS.evidence, data); }
+export async function updateEvidence(id, data) { return updateListItem(LISTS.evidence, id, data); }
+export async function deleteEvidence(id) { return deleteListItem(LISTS.evidence, id); }
+
+// ── Compliance Tasks ──
+export async function getComplianceTasks() { return getListItems(LISTS.complianceTasks); }
+export async function createComplianceTask(data) { return createListItem(LISTS.complianceTasks, data); }
+export async function updateComplianceTask(id, data) { return updateListItem(LISTS.complianceTasks, id, data); }
+export async function deleteComplianceTask(id) { return deleteListItem(LISTS.complianceTasks, id); }
+
+// ── Training Records ──
+export async function getTrainingRecords() { return getListItems(LISTS.trainingRecords); }
+export async function createTrainingRecordItem(data) { return createListItem(LISTS.trainingRecords, data); }
+export async function updateTrainingRecordItem(id, data) { return updateListItem(LISTS.trainingRecords, id, data); }
+
+// ── Contracts ──
+export async function getContracts() { return getListItems(LISTS.contracts); }
+export async function createContract(data) { return createListItem(LISTS.contracts, data); }
+export async function updateContract(id, data) { return updateListItem(LISTS.contracts, id, data); }
+
+// ── Facilities ──
+export async function getFacilities() { return getListItems(LISTS.facilities); }
+export async function createFacility(data) { return createListItem(LISTS.facilities, data); }
+export async function updateFacility(id, data) { return updateListItem(LISTS.facilities, id, data); }
 
 // ═══════════════════════════════════════════
 // OneDrive / SharePoint Document Library

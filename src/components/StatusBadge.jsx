@@ -20,6 +20,12 @@ export default function StatusBadge({ status }) {
     'Warning': 'bg-amber-100 text-amber-700',
     'Minor': 'bg-emerald-100 text-emerald-700',
     'Moderate': 'bg-amber-100 text-amber-700',
+    'Missing': 'bg-red-100 text-red-700',
+    'Outdated': 'bg-amber-100 text-amber-700',
+    'Met': 'bg-emerald-100 text-emerald-700',
+    'Partially Met': 'bg-amber-100 text-amber-700',
+    'Not Met': 'bg-red-100 text-red-700',
+    'N/A': 'bg-slate-100 text-slate-600',
   };
 
   return (

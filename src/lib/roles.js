@@ -66,7 +66,7 @@ export const rolePermissions = {
     canViewAllDepartments: false,
     visiblePages: [
       '/', '/facilities', '/eoc', '/ligature-risk', '/staffing',
-      '/training', '/incidents', '/standards', '/regulatory-changes',
+      '/training', '/incidents', '/standards', '/crosswalk', '/evidence', '/regulatory-changes',
     ],
     createOnlyPages: ['/incidents', '/staffing'], // can only create on these pages
   },
@@ -80,7 +80,7 @@ export const rolePermissions = {
     canManageSettings: false,
     canExport: false,
     canViewAllDepartments: false,
-    visiblePages: ['/', '/facilities', '/standards', '/regulatory-changes'],
+    visiblePages: ['/', '/facilities', '/standards', '/crosswalk', '/evidence', '/regulatory-changes'],
   },
 };
 

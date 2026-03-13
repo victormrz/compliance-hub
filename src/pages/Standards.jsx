@@ -12,8 +12,10 @@ const bodies = ['All Standards', 'TJC', 'CARF', 'State', 'Federal'];
 const standardFields = [
   { key: 'code', label: 'Standard Code', type: 'text', required: true, placeholder: 'e.g., HR.01.01.01' },
   { key: 'name', label: 'Standard Name', type: 'text', required: true, placeholder: 'Enter standard name' },
-  { key: 'body', label: 'Accreditation Body', type: 'select', required: true, options: ['The Joint Commission', 'CARF International', 'State Regulations', 'Federal (HIPAA)'] },
+  { key: 'body', label: 'Accreditation Body', type: 'select', required: true, options: ['CARF', 'TJC', 'KY-DBHDID', 'Federal'] },
+  { key: 'section', label: 'Section', type: 'text', required: true, placeholder: 'e.g., 1.H or HR' },
   { key: 'category', label: 'Category', type: 'text', required: true, placeholder: 'e.g., Human Resources' },
+  { key: 'requirementType', label: 'Requirement Type', type: 'select', options: ['Documentation', 'Training', 'Inspection', 'Policy', 'Reporting', 'Assessment', 'Review'] },
   { key: 'status', label: 'Status', type: 'select', required: true, options: ['Met', 'Partially Met', 'Not Met', 'N/A'] },
   { key: 'evidenceRequired', label: 'Evidence Required', type: 'tags', placeholder: 'Policy document, Training records, ...' },
 ];
@@ -28,7 +30,7 @@ export default function Standards() {
 
   // Apply global accreditation filter first, then local tab filter, then search
   const globalFiltered = filterByBody(standards);
-  const bodyMap = { 'TJC': 'The Joint Commission', 'CARF': 'CARF International', 'State': 'State Regulations', 'Federal': 'Federal (HIPAA)' };
+  const bodyMap = { 'TJC': 'TJC', 'CARF': 'CARF', 'State': 'KY-DBHDID', 'Federal': 'Federal' };
   const tabFiltered = filter === 'All Standards' ? globalFiltered : globalFiltered.filter(s => s.body === bodyMap[filter]);
   const q = search.toLowerCase();
   const filtered = q ? tabFiltered.filter(s =>
@@ -39,10 +41,10 @@ export default function Standards() {
   ) : tabFiltered;
 
   const counts = {
-    'TJC': globalFiltered.filter(s => (s.body || '').includes('Joint Commission')).length,
-    'CARF': globalFiltered.filter(s => (s.body || '').includes('CARF')).length,
-    'State': globalFiltered.filter(s => (s.body || '').includes('State')).length,
-    'Federal': globalFiltered.filter(s => (s.body || '').includes('HIPAA') || (s.body || '').includes('Federal')).length,
+    'TJC': globalFiltered.filter(s => s.body === 'TJC').length,
+    'CARF': globalFiltered.filter(s => s.body === 'CARF').length,
+    'State': globalFiltered.filter(s => s.body === 'KY-DBHDID').length,
+    'Federal': globalFiltered.filter(s => s.body === 'Federal').length,
   };
 
   const handleAdd = () => {
@@ -144,6 +146,7 @@ export default function Standards() {
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
                 <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Standard</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Section</th>
                 <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Body</th>
                 <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Category</th>
                 <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Evidence Required</th>
@@ -165,6 +168,7 @@ export default function Standards() {
                       </div>
                     </div>
                   </td>
+                  <td className="px-5 py-4 text-sm font-mono text-slate-600">{std.section || '—'}</td>
                   <td className="px-5 py-4 text-sm text-slate-600">{std.body}</td>
                   <td className="px-5 py-4 text-sm text-slate-600">{std.category}</td>
                   <td className="px-5 py-4">

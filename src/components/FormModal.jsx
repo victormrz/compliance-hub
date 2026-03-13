@@ -66,6 +66,20 @@ function validateField(field, value) {
     if (isNaN(d.getTime())) return `${field.label} must be a valid date`;
   }
 
+  // Pattern validation
+  if (field.pattern && value) {
+    const str = Array.isArray(value) ? value.join(', ') : String(value);
+    if (!field.pattern.test(str)) {
+      return field.patternMessage || `${field.label} format is invalid`;
+    }
+  }
+
+  // Custom validate callback
+  if (field.validate && typeof field.validate === 'function') {
+    const customError = field.validate(value);
+    if (customError) return customError;
+  }
+
   return null;
 }
 

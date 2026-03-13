@@ -8,10 +8,11 @@ import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
 
 const policyFields = [
+  { key: 'policyNumber', label: 'Policy Number', type: 'text', required: true, placeholder: 'e.g., HR-20 or TS-13' },
   { key: 'title', label: 'Policy Title', type: 'text', required: true, placeholder: 'e.g., Admission and Discharge Policy' },
-  { key: 'category', label: 'Category', type: 'select', required: true, options: ['Clinical', 'Compliance', 'Safety', 'HR', 'Administrative', 'Financial'] },
+  { key: 'category', label: 'Category', type: 'select', required: true, options: ['Clinical', 'Compliance', 'Safety', 'HR', 'Administrative', 'Financial', 'Technology', 'Rights'] },
   { key: 'version', label: 'Version', type: 'text', required: true, placeholder: 'e.g., 3.1' },
-  { key: 'owner', label: 'Responsible Owner', type: 'text', required: true, placeholder: 'e.g., Dr. Sarah Mitchell' },
+  { key: 'ownerRole', label: 'Responsible Role', type: 'select', required: true, options: ['Executive Director', 'Clinical Director', 'Compliance Officer', 'Safety Officer', 'HR Director', 'Medical Director', 'Nursing Director', 'IT Director', 'QI Coordinator'] },
   { key: 'nextReview', label: 'Next Review Date', type: 'date', required: true },
   { key: 'standardRefs', label: 'Linked Standards', type: 'tags', placeholder: 'PC.01.02.01, RI.01.01.01' },
   { key: 'status', label: 'Status', type: 'select', required: true, options: ['Current', 'Review Due', 'Draft', 'Archived'] },
@@ -45,7 +46,7 @@ export default function Policies() {
   const q = search.toLowerCase();
   const filteredPolicies = q ? bodyFiltered.filter(p =>
     (p.title || '').toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q) ||
-    (p.owner || '').toLowerCase().includes(q) || (p.standardRefs || []).some(r => r.toLowerCase().includes(q))
+    (p.ownerRole || p.owner || '').toLowerCase().includes(q) || (p.standardRefs || []).some(r => r.toLowerCase().includes(q))
   ) : bodyFiltered;
   const filteredFiles = q ? onedriveFiles.filter(f =>
     f.name.toLowerCase().includes(q) || f.path.toLowerCase().includes(q)
@@ -112,6 +113,7 @@ export default function Policies() {
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <table className="w-full">
               <thead><tr className="border-b border-slate-200 bg-slate-50">
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Policy #</th>
                 <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Policy</th>
                 <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Category</th>
                 <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Version</th>
@@ -124,6 +126,7 @@ export default function Policies() {
               <tbody>
                 {filteredPolicies.map((p, i) => (
                   <tr key={p.id || i} className="border-b border-slate-100 hover:bg-slate-50">
+                    <td className="px-5 py-4 text-sm font-mono text-slate-600">{p.policyNumber || '—'}</td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center"><FileText size={14} className="text-indigo-500" /></div>
@@ -134,8 +137,8 @@ export default function Policies() {
                     <td className="px-5 py-4 text-sm text-slate-600 font-mono">v{p.version}</td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">{(p.owner || '').split(' ').map(n=>n[0]).join('')}</div>
-                        <span className="text-sm text-slate-600">{p.owner}</span>
+                        <div className="w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">{(p.ownerRole || p.owner || '').split(' ').map(n=>n[0]).join('')}</div>
+                        <span className="text-sm text-slate-600">{p.ownerRole || p.owner}</span>
                       </div>
                     </td>
                     <td className="px-5 py-4 text-sm text-slate-600">{p.nextReview}</td>

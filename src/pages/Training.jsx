@@ -28,12 +28,12 @@ export default function Training() {
   const [editItem, setEditItem] = useState(null);
 
   const bodyFilteredCourses = filterByBody(trainingCourses);
-  const bodyFilteredNames = new Set(bodyFilteredCourses.map(c => c.course));
+  const bodyFilteredNames = new Set(bodyFilteredCourses.map(c => c.course || c.title || c.name));
   const bodyFilteredRecords = trainingRecordsList.filter(r => bodyFilteredNames.has(r.course));
 
   const q = search.toLowerCase();
   const filteredCourses = q ? bodyFilteredCourses.filter(t =>
-    (t.course || '').toLowerCase().includes(q) || (t.category || '').toLowerCase().includes(q) ||
+    (t.course || t.title || t.name || '').toLowerCase().includes(q) || (t.category || '').toLowerCase().includes(q) ||
     (t.standardRefs || []).some(r => r.toLowerCase().includes(q))
   ) : bodyFilteredCourses;
   const filteredRecords = q ? bodyFilteredRecords.filter(r =>
@@ -102,11 +102,11 @@ export default function Training() {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center"><GraduationCap size={14} className="text-indigo-500" /></div>
-                        <div><p className="text-sm font-semibold text-slate-900">{t.course}</p><p className="text-xs text-slate-500">{t.category}</p></div>
+                        <div><p className="text-sm font-semibold text-slate-900">{t.course || t.title || t.name || '—'}</p><p className="text-xs text-slate-500">{t.category || '—'}</p></div>
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-sm text-slate-600">{t.frequency}</td>
-                    <td className="px-5 py-4 text-sm text-slate-600">{t.duration}</td>
+                    <td className="px-5 py-4 text-sm text-slate-600">{t.frequency || '—'}</td>
+                    <td className="px-5 py-4 text-sm text-slate-600">{t.duration || '—'}</td>
                     <td className="px-5 py-4">
                       <div className="flex flex-wrap gap-1">
                         {(t.standardRefs || []).map(ref => <span key={ref} className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-mono">{ref}</span>)}

@@ -64,6 +64,7 @@ function seedFileToListName(filename) {
     programapplicability: "ProgramApplicability",
     policies: "Policies",
     "compliance-tasks": "ComplianceTasks",
+    tasks: "ComplianceTasks",
     compliancetasks: "ComplianceTasks",
     training: "Training",
     "training-records": "TrainingRecords",
@@ -89,6 +90,65 @@ function seedFileToListName(filename) {
 
   return MAP[base.toLowerCase()] || base;
 }
+
+// ============================================================
+// Per-list field mappings: seed JSON key → SharePoint column name
+// SharePoint always requires "Title" as the primary field.
+// ============================================================
+
+const FIELD_MAPS = {
+  Standards: (r) => ({
+    Title: r.code,
+    StandardName: r.name,
+    Body: r.body,
+    Section: r.section,
+    Category: r.category,
+    RequirementType: r.requirementType,
+    EvidenceRequired: Array.isArray(r.evidenceRequired) ? r.evidenceRequired.join("; ") : (r.evidenceRequired || ""),
+    Status: r.status || "Active",
+  }),
+  Policies: (r) => ({
+    Title: r.title,
+    PolicyNumber: r.policyNumber,
+    PolicySeries: r.series,
+    Category: r.category,
+    OwnerRole: r.ownerRole,
+    StandardRefs: Array.isArray(r.standardRefs) ? r.standardRefs.join(", ") : (r.standardRefs || ""),
+    Status: r.status || "Current",
+    Version: "1.0",
+  }),
+  Training: (r) => ({
+    Title: r.title,
+    StandardRef: r.standardRef,
+    Category: r.category,
+    ProvidedTo: r.providedTo === "All Personnel" ? "Personnel" : r.providedTo,
+    CompetencyBased: r.competencyBased === true || r.competencyBased === "Yes",
+    Frequency: r.frequency,
+    Status: r.status || "Active",
+  }),
+  ComplianceTasks: (r) => ({
+    Title: r.title,
+    StandardRef: r.standardRef,
+    Body: r.body,
+    AssignedToRole: r.assignedToRole,
+    Frequency: r.frequency,
+    PolicyRef: r.policyRef,
+    TaskCategory: r.taskCategory,
+    EvidenceLocation: r.evidenceLocation,
+    Status: r.status || "Not Started",
+    Priority: r.priority || "Medium",
+  }),
+  Crosswalk: (r) => ({
+    Title: r.title,
+    CARFStandard: r.carfStandard,
+    TJCStandard: r.tjcStandard,
+    StateRegulation: r.stateRegulation,
+    FederalRegulation: r.federalRegulation,
+    PolicyRef: r.policyRef,
+    TrainingRef: r.trainingRef,
+    RequirementCategory: r.category,
+  }),
+};
 
 // ============================================================
 // Discover seed files and map to lists
@@ -251,11 +311,22 @@ async function loadListSeed(client, siteId, listName, filePath) {
     return { loaded: 0, errors: 0 };
   }
 
-  // Get column mappings
-  const columnMap = await getColumnMap(client, siteId, listId);
-
-  // Transform all records
-  const transformed = records.map((r) => transformRecord(r, columnMap));
+  // Transform records using per-list field maps if available, else auto-map columns
+  let transformed;
+  const fieldMapper = FIELD_MAPS[listName];
+  if (fieldMapper) {
+    transformed = records.map((r) => {
+      const mapped = fieldMapper(r);
+      // Strip null/undefined values — SharePoint rejects them
+      for (const [k, v] of Object.entries(mapped)) {
+        if (v === null || v === undefined) delete mapped[k];
+      }
+      return mapped;
+    });
+  } else {
+    const columnMap = await getColumnMap(client, siteId, listId);
+    transformed = records.map((r) => transformRecord(r, columnMap));
+  }
 
   let loaded = 0;
   let errors = 0;

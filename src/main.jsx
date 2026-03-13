@@ -17,7 +17,7 @@ msalInstance.initialize().then(() => {
       <StrictMode>
         <MsalProvider instance={msalInstance}>
           <AuthProvider>
-            <BrowserRouter>
+            <BrowserRouter basename={import.meta.env.BASE_URL}>
               <App />
             </BrowserRouter>
           </AuthProvider>

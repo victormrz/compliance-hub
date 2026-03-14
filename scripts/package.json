@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "create-lists": "node createLists.js",
-    "load-seed": "node loadSeedData.js"
+    "load-seed": "node loadSeedData.js",
+    "upload-policies": "node uploadPolicies.js"
   },
   "dependencies": {
     "@azure/msal-node": "^2.16.0",

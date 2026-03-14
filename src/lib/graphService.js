@@ -329,6 +329,44 @@ export async function getPolicyDocuments(folderPath = 'Policies') {
   return getSiteFiles(folderPath);
 }
 
+// Get version history for a document
+export async function getFileVersions(fileId) {
+  const id = await getSiteId();
+  const result = await graphClient
+    .api(`/sites/${id}/drive/items/${fileId}/versions`)
+    .select('id,lastModifiedDateTime,lastModifiedBy,size')
+    .get();
+  return result.value;
+}
+
+// Upload a file to a folder in the document library (< 4MB)
+export async function uploadFile(folderPath, fileName, fileContent) {
+  const id = await getSiteId();
+  const result = await graphClient
+    .api(`/sites/${id}/drive/root:/${folderPath}/${fileName}:/content`)
+    .putStream(fileContent);
+  return result;
+}
+
+// Upload a new version of an existing file
+export async function uploadNewVersion(fileId, fileContent) {
+  const id = await getSiteId();
+  const result = await graphClient
+    .api(`/sites/${id}/drive/items/${fileId}/content`)
+    .putStream(fileContent);
+  return result;
+}
+
+// Get file metadata including webUrl and download URL
+export async function getFileDetails(fileId) {
+  const id = await getSiteId();
+  const result = await graphClient
+    .api(`/sites/${id}/drive/items/${fileId}`)
+    .select('id,name,webUrl,size,lastModifiedDateTime,lastModifiedBy,@microsoft.graph.downloadUrl')
+    .get();
+  return result;
+}
+
 // Get current user's profile
 export async function getCurrentUser() {
   const user = await graphClient.api('/me').select('displayName,mail,jobTitle,department').get();

@@ -1,11 +1,14 @@
-import { useState } from 'react';
-import { Plus, FileText, Pencil, Cloud, ExternalLink, Check, Wifi, WifiOff } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Plus, FileText, Pencil, Cloud, ExternalLink, Check, Wifi, WifiOff, Upload, History, ChevronDown, ChevronRight, AlertCircle } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
 import { policies as mockPolicies } from '../data/mockData';
 import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
+import { useAuth } from '../hooks/useAuth';
+import * as graphService from '../lib/graphService';
+import { logAuditEvent } from '../lib/auditService';
 
 const policyFields = [
   { key: 'policyNumber', label: 'Policy Number', type: 'text', required: true, placeholder: 'e.g., HR-20 or TS-13' },
@@ -18,29 +21,149 @@ const policyFields = [
   { key: 'status', label: 'Status', type: 'select', required: true, options: ['Current', 'Review Due', 'Draft', 'Archived'] },
 ];
 
-const mockOnedriveFiles = [
-  { id: 'od1', name: 'Admission and Discharge Policy.pdf', path: '/Policies/Clinical/', size: '245 KB', modified: '2026-01-15', imported: true },
-  { id: 'od2', name: 'Medication Management Policy.pdf', path: '/Policies/Clinical/', size: '189 KB', modified: '2025-12-20', imported: true },
-  { id: 'od3', name: 'HIPAA Privacy Policy.pdf', path: '/Policies/Compliance/', size: '312 KB', modified: '2026-02-01', imported: true },
-  { id: 'od4', name: 'Emergency Operations Plan.pdf', path: '/Policies/Safety/', size: '567 KB', modified: '2025-08-15', imported: true },
-  { id: 'od5', name: 'Incident Reporting Policy.pdf', path: '/Policies/Compliance/', size: '156 KB', modified: '2025-10-01', imported: true },
-  { id: 'od6', name: 'Employee Handbook.pdf', path: '/Policies/HR/', size: '1.2 MB', modified: '2025-03-01', imported: true },
-  { id: 'od7', name: 'Patient Rights and Grievance Policy.pdf', path: '/Policies/Clinical/', size: '198 KB', modified: '2025-09-15', imported: true },
-  { id: 'od8', name: 'Infection Control Policy.pdf', path: '/Policies/Safety/', size: '234 KB', modified: '2025-07-20', imported: true },
-  { id: 'od9', name: 'Suicide Prevention Protocol.pdf', path: '/Policies/Clinical/', size: '178 KB', modified: '2026-01-10', imported: false },
-  { id: 'od10', name: 'Abuse and Neglect Reporting.pdf', path: '/Policies/Compliance/', size: '145 KB', modified: '2025-11-05', imported: false },
-  { id: 'od11', name: 'Telehealth Services Policy.pdf', path: '/Policies/Clinical/', size: '167 KB', modified: '2026-02-28', imported: false },
-  { id: 'od12', name: 'MAT Protocol.pdf', path: '/Policies/Clinical/', size: '289 KB', modified: '2026-03-01', imported: false },
-];
+// Extract policy number from filename (e.g., "HR-05 Infection Prevention.docx" → "HR-05")
+function extractPolicyNumber(filename) {
+  const match = filename.match(/^(HR-\d+|TS-\d+(?:\.\d+)?)/i);
+  return match ? match[1].toUpperCase() : null;
+}
+
+// Format file size for display
+function formatFileSize(bytes) {
+  if (!bytes) return '—';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+// Format date for display
+function formatDate(isoDate) {
+  if (!isoDate) return '—';
+  return new Date(isoDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
 
 export default function Policies() {
   const { filterByBody } = useAccreditation();
+  const { isAuthenticated, user } = useAuth();
   const { data: policiesList, loading, isLive, create, update } = useSharePointData('Policies', mockPolicies);
   const [tab, setTab] = useState('policies');
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
-  const [onedriveFiles] = useState(mockOnedriveFiles);
+
+  // Document library state
+  const [files, setFiles] = useState([]);
+  const [filesLoading, setFilesLoading] = useState(false);
+  const [filesError, setFilesError] = useState(null);
+  const [expandedFileId, setExpandedFileId] = useState(null);
+  const [versions, setVersions] = useState([]);
+  const [versionsLoading, setVersionsLoading] = useState(false);
+  const uploadInputRef = useRef(null);
+  const versionUploadRef = useRef(null);
+  const [versionUploadFileId, setVersionUploadFileId] = useState(null);
+
+  // Fetch files from SharePoint document library
+  const fetchFiles = useCallback(async () => {
+    if (!isAuthenticated) return;
+    setFilesLoading(true);
+    setFilesError(null);
+    try {
+      const result = await graphService.getPolicyDocuments('Policies');
+      setFiles(result.filter(f => f.file)); // Only files, not folders
+    } catch (err) {
+      console.error('Failed to fetch policy documents:', err);
+      setFilesError(err.message);
+    } finally {
+      setFilesLoading(false);
+    }
+  }, [isAuthenticated]);
+
+  // Fetch files when switching to OneDrive tab
+  useEffect(() => {
+    if (tab === 'onedrive' && isAuthenticated && files.length === 0) {
+      fetchFiles();
+    }
+  }, [tab, isAuthenticated, files.length, fetchFiles]);
+
+  // Fetch version history for a file
+  const handleToggleVersions = async (fileId) => {
+    if (expandedFileId === fileId) {
+      setExpandedFileId(null);
+      setVersions([]);
+      return;
+    }
+    setExpandedFileId(fileId);
+    setVersionsLoading(true);
+    try {
+      const result = await graphService.getFileVersions(fileId);
+      setVersions(result);
+    } catch (err) {
+      console.error('Failed to fetch versions:', err);
+      setVersions([]);
+    } finally {
+      setVersionsLoading(false);
+    }
+  };
+
+  // Upload a new document
+  const handleUploadNew = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const buffer = await file.arrayBuffer();
+      await graphService.uploadFile('Policies', file.name, buffer);
+      logAuditEvent({
+        action: 'Create',
+        entity: 'PolicyDocuments',
+        recordId: file.name,
+        recordName: file.name,
+        user,
+        changes: { fileName: file.name, fileSize: formatFileSize(file.size) },
+        isLive,
+      });
+      await fetchFiles();
+    } catch (err) {
+      console.error('Upload failed:', err);
+      alert('Upload failed: ' + (err.message || err));
+    }
+    e.target.value = '';
+  };
+
+  // Upload a new version of an existing file
+  const handleUploadVersion = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !versionUploadFileId) return;
+    const targetFile = files.find(f => f.id === versionUploadFileId);
+    try {
+      const buffer = await file.arrayBuffer();
+      await graphService.uploadNewVersion(versionUploadFileId, buffer);
+      logAuditEvent({
+        action: 'Update',
+        entity: 'PolicyDocuments',
+        recordId: versionUploadFileId,
+        recordName: targetFile?.name || file.name,
+        user,
+        changes: { newVersion: file.name, fileSize: formatFileSize(file.size) },
+        isLive,
+      });
+      await fetchFiles();
+      if (expandedFileId === versionUploadFileId) {
+        const result = await graphService.getFileVersions(versionUploadFileId);
+        setVersions(result);
+      }
+    } catch (err) {
+      console.error('Version upload failed:', err);
+      alert('Upload failed: ' + (err.message || err));
+    }
+    e.target.value = '';
+    setVersionUploadFileId(null);
+  };
+
+  // Build a map of policy number → file for linking Policy Register to documents
+  const policyFileMap = {};
+  files.forEach(f => {
+    const num = extractPolicyNumber(f.name);
+    if (num) policyFileMap[num] = f;
+  });
 
   const bodyFiltered = filterByBody(policiesList);
   const q = search.toLowerCase();
@@ -48,11 +171,9 @@ export default function Policies() {
     (p.title || '').toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q) ||
     (p.ownerRole || p.owner || '').toLowerCase().includes(q) || (p.standardRefs || []).some(r => r.toLowerCase().includes(q))
   ) : bodyFiltered;
-  const filteredFiles = q ? onedriveFiles.filter(f =>
-    f.name.toLowerCase().includes(q) || f.path.toLowerCase().includes(q)
-  ) : onedriveFiles;
-  const importedCount = onedriveFiles.filter(f => f.imported).length;
-  const pendingCount = onedriveFiles.filter(f => !f.imported).length;
+  const filteredFiles = q ? files.filter(f =>
+    f.name.toLowerCase().includes(q)
+  ) : files;
 
   const handleSubmit = async (formData) => {
     if (editItem?.id) await update(editItem.id, formData);
@@ -72,21 +193,25 @@ export default function Policies() {
           <p className="text-sm text-slate-500 mt-1">Version-controlled policy repository linked to accreditation standards</p>
         </div>
         <div className="flex gap-2">
-          <button className="bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-slate-200 hover:bg-slate-50">
-            <Cloud size={16} /> Sync OneDrive
-          </button>
+          {tab === 'onedrive' && isAuthenticated && (
+            <>
+              <input ref={uploadInputRef} type="file" accept=".docx,.pdf,.pptx" className="hidden" onChange={handleUploadNew} />
+              <button onClick={() => uploadInputRef.current?.click()} className="bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-slate-200 hover:bg-slate-50">
+                <Upload size={16} /> Upload Document
+              </button>
+            </>
+          )}
           <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700">
             <Plus size={16} /> Add Policy
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-xl border border-slate-200 p-4"><div className="flex items-center gap-3"><FileText size={20} className="text-indigo-500" /><div><p className="text-2xl font-bold">{policiesList.length}</p><p className="text-xs text-slate-500">Total Policies</p></div></div></div>
         <div className="bg-white rounded-xl border border-slate-200 p-4"><div className="flex items-center gap-3"><FileText size={20} className="text-emerald-500" /><div><p className="text-2xl font-bold">{policiesList.filter(p => p.status === 'Current').length}</p><p className="text-xs text-slate-500">Current</p></div></div></div>
         <div className="bg-white rounded-xl border border-slate-200 p-4"><div className="flex items-center gap-3"><FileText size={20} className="text-amber-500" /><div><p className="text-2xl font-bold">{policiesList.filter(p => p.status === 'Review Due').length}</p><p className="text-xs text-slate-500">Review Due</p></div></div></div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4"><div className="flex items-center gap-3"><Cloud size={20} className="text-blue-500" /><div><p className="text-2xl font-bold">{importedCount}</p><p className="text-xs text-slate-500">Imported</p></div></div></div>
-        <div className="bg-white rounded-xl border border-slate-200 p-4"><div className="flex items-center gap-3"><Cloud size={20} className="text-amber-500" /><div><p className="text-2xl font-bold">{pendingCount}</p><p className="text-xs text-slate-500">Pending Import</p></div></div></div>
+        <div className="bg-white rounded-xl border border-slate-200 p-4"><div className="flex items-center gap-3"><Cloud size={20} className="text-blue-500" /><div><p className="text-2xl font-bold">{files.length}</p><p className="text-xs text-slate-500">Documents in SharePoint</p></div></div></div>
       </div>
 
       <div className="flex items-center justify-between mb-4">
@@ -95,13 +220,16 @@ export default function Policies() {
             Policy Register ({filteredPolicies.length})
           </button>
           <button onClick={() => setTab('onedrive')} className={`px-4 py-2 rounded-lg text-sm font-medium ${tab === 'onedrive' ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 border border-slate-200'}`}>
-            OneDrive Files ({filteredFiles.length})
+            Documents ({isAuthenticated ? filteredFiles.length : '—'})
           </button>
         </div>
         <SearchInput value={search} onChange={setSearch} placeholder="Search policies..." />
       </div>
 
-      {loading ? (
+      {/* Hidden file input for version uploads */}
+      <input ref={versionUploadRef} type="file" accept=".docx,.pdf,.pptx" className="hidden" onChange={handleUploadVersion} />
+
+      {loading && tab === 'policies' ? (
         <div className="flex items-center justify-center py-12"><div className="w-8 h-8 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" /></div>
       ) : tab === 'policies' ? (
         filteredPolicies.length === 0 ? (
@@ -124,81 +252,167 @@ export default function Policies() {
                 <th className="px-5 py-3"></th>
               </tr></thead>
               <tbody>
-                {filteredPolicies.map((p, i) => (
-                  <tr key={p.id || i} className="border-b border-slate-100 hover:bg-slate-50">
-                    <td className="px-5 py-4 text-sm font-mono text-slate-600">{p.policyNumber || '—'}</td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center"><FileText size={14} className="text-indigo-500" /></div>
-                        <p className="text-sm font-medium text-slate-900">{p.title}</p>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4"><span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs">{p.category}</span></td>
-                    <td className="px-5 py-4 text-sm text-slate-600 font-mono">v{p.version}</td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">{(p.ownerRole || p.owner || '').split(' ').map(n=>n[0]).join('')}</div>
-                        <span className="text-sm text-slate-600">{p.ownerRole || p.owner}</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 text-sm text-slate-600">{p.nextReview}</td>
-                    <td className="px-5 py-4"><div className="flex flex-wrap gap-1">{(p.standardRefs || []).map(ref => <span key={ref} className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-mono">{ref}</span>)}</div></td>
-                    <td className="px-5 py-4"><StatusBadge status={p.status} /></td>
-                    <td className="px-5 py-4"><button onClick={() => { setEditItem(p); setModalOpen(true); }} className="text-slate-400 hover:text-indigo-600"><Pencil size={14} /></button></td>
-                  </tr>
-                ))}
+                {filteredPolicies.map((p, i) => {
+                  const linkedFile = policyFileMap[p.policyNumber];
+                  return (
+                    <tr key={p.id || i} className="border-b border-slate-100 hover:bg-slate-50">
+                      <td className="px-5 py-4 text-sm font-mono text-slate-600">{p.policyNumber || '—'}</td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center"><FileText size={14} className="text-indigo-500" /></div>
+                          <p className="text-sm font-medium text-slate-900">{p.title}</p>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4"><span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs">{p.category}</span></td>
+                      <td className="px-5 py-4 text-sm text-slate-600 font-mono">v{p.version}</td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">{(p.ownerRole || p.owner || '').split(' ').map(n=>n[0]).join('')}</div>
+                          <span className="text-sm text-slate-600">{p.ownerRole || p.owner}</span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 text-sm text-slate-600">{p.nextReview}</td>
+                      <td className="px-5 py-4"><div className="flex flex-wrap gap-1">{(p.standardRefs || []).map(ref => <span key={ref} className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-mono">{ref}</span>)}</div></td>
+                      <td className="px-5 py-4"><StatusBadge status={p.status} /></td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-2">
+                          {linkedFile && (
+                            <a href={linkedFile.webUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700" title="Open document">
+                              <ExternalLink size={14} />
+                            </a>
+                          )}
+                          <button onClick={() => { setEditItem(p); setModalOpen(true); }} className="text-slate-400 hover:text-indigo-600"><Pencil size={14} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="px-5 py-3 bg-blue-50 border-b border-blue-100 flex items-center gap-2">
-            <Cloud size={16} className="text-blue-600" />
-            <span className="text-sm text-blue-700 font-medium">Connected to OneDrive: /Roaring Brook Recovery/Policies/</span>
+        /* Documents Tab */
+        !isAuthenticated ? (
+          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+            <Cloud size={40} className="text-slate-300 mx-auto mb-3" />
+            <p className="text-sm text-slate-500">Sign in to view policy documents from SharePoint</p>
           </div>
-          <table className="w-full">
-            <thead><tr className="border-b border-slate-200 bg-slate-50">
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">File Name</th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Folder</th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Size</th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Last Modified</th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Import Status</th>
-              <th className="px-5 py-3"></th>
-            </tr></thead>
-            <tbody>
-              {filteredFiles.map(file => (
-                <tr key={file.id} className="border-b border-slate-100 hover:bg-slate-50">
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${file.imported ? 'bg-emerald-50' : 'bg-slate-50'}`}>
-                        <FileText size={14} className={file.imported ? 'text-emerald-500' : 'text-slate-400'} />
-                      </div>
-                      <p className="text-sm font-medium text-slate-900">{file.name}</p>
-                    </div>
-                  </td>
-                  <td className="px-5 py-4 text-sm text-slate-500 font-mono">{file.path}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{file.size}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{file.modified}</td>
-                  <td className="px-5 py-4">
-                    {file.imported ? (
-                      <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full text-xs font-medium"><Check size={12} /> Imported</span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded-full text-xs font-medium">Pending Review</span>
-                    )}
-                  </td>
-                  <td className="px-5 py-4">
-                    {file.imported ? (
-                      <button className="text-indigo-600 hover:text-indigo-800 text-xs font-medium flex items-center gap-1"><ExternalLink size={12} /> Open</button>
-                    ) : (
-                      <button className="bg-indigo-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-indigo-700">Import</button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        ) : filesLoading ? (
+          <div className="flex items-center justify-center py-12"><div className="w-8 h-8 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" /></div>
+        ) : filesError ? (
+          <div className="bg-white rounded-xl border border-red-200 p-12 text-center">
+            <AlertCircle size={40} className="text-red-300 mx-auto mb-3" />
+            <p className="text-sm text-red-600">{filesError}</p>
+            <button onClick={fetchFiles} className="mt-3 text-sm text-indigo-600 hover:text-indigo-800 font-medium">Retry</button>
+          </div>
+        ) : filteredFiles.length === 0 ? (
+          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+            <FileText size={40} className="text-slate-300 mx-auto mb-3" />
+            <p className="text-sm text-slate-500">{search ? 'No documents match your search' : 'No documents in SharePoint yet. Upload policy documents to get started.'}</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div className="px-5 py-3 bg-blue-50 border-b border-blue-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Cloud size={16} className="text-blue-600" />
+                <span className="text-sm text-blue-700 font-medium">SharePoint Document Library — /Policies/</span>
+              </div>
+              <button onClick={fetchFiles} className="text-xs text-blue-600 hover:text-blue-800 font-medium">Refresh</button>
+            </div>
+            <table className="w-full">
+              <thead><tr className="border-b border-slate-200 bg-slate-50">
+                <th className="w-8 px-2 py-3"></th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Document</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Policy #</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Size</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Last Modified</th>
+                <th className="px-5 py-3"></th>
+              </tr></thead>
+              <tbody>
+                {filteredFiles.map(file => {
+                  const policyNum = extractPolicyNumber(file.name);
+                  const isExpanded = expandedFileId === file.id;
+                  return (
+                    <tr key={file.id} className="border-b border-slate-100">
+                      <td colSpan={6} className="p-0">
+                        {/* File row */}
+                        <div className="flex items-center hover:bg-slate-50">
+                          <div className="w-8 px-2 py-4 flex items-center justify-center">
+                            <button onClick={() => handleToggleVersions(file.id)} className="text-slate-400 hover:text-slate-600">
+                              {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                            </button>
+                          </div>
+                          <div className="flex-1 px-5 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                <FileText size={14} className="text-blue-500" />
+                              </div>
+                              <p className="text-sm font-medium text-slate-900">{file.name}</p>
+                            </div>
+                          </div>
+                          <div className="px-5 py-4 w-24">
+                            {policyNum ? (
+                              <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-mono">{policyNum}</span>
+                            ) : (
+                              <span className="text-xs text-slate-400">—</span>
+                            )}
+                          </div>
+                          <div className="px-5 py-4 w-24 text-sm text-slate-600">{formatFileSize(file.size)}</div>
+                          <div className="px-5 py-4 w-36 text-sm text-slate-600">{formatDate(file.lastModifiedDateTime)}</div>
+                          <div className="px-5 py-4 w-48">
+                            <div className="flex items-center gap-2 justify-end">
+                              <a href={file.webUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800 text-xs font-medium flex items-center gap-1">
+                                <ExternalLink size={12} /> Open
+                              </a>
+                              <button
+                                onClick={() => { setVersionUploadFileId(file.id); versionUploadRef.current?.click(); }}
+                                className="text-slate-500 hover:text-slate-700 text-xs font-medium flex items-center gap-1"
+                              >
+                                <Upload size={12} /> Update
+                              </button>
+                              <button
+                                onClick={() => handleToggleVersions(file.id)}
+                                className="text-slate-500 hover:text-slate-700 text-xs font-medium flex items-center gap-1"
+                              >
+                                <History size={12} /> Versions
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Version history (expandable) */}
+                        {isExpanded && (
+                          <div className="bg-slate-50 border-t border-slate-100 px-12 py-3">
+                            {versionsLoading ? (
+                              <p className="text-xs text-slate-400 py-2">Loading version history...</p>
+                            ) : versions.length === 0 ? (
+                              <p className="text-xs text-slate-400 py-2">No version history available</p>
+                            ) : (
+                              <div>
+                                <p className="text-xs font-semibold text-slate-500 uppercase mb-2">Version History</p>
+                                <div className="space-y-1">
+                                  {versions.map((v, idx) => (
+                                    <div key={v.id} className="flex items-center gap-4 text-xs py-1.5">
+                                      <span className="font-mono text-slate-600 w-12">v{versions.length - idx}.0</span>
+                                      <span className="text-slate-600 w-36">{formatDate(v.lastModifiedDateTime)}</span>
+                                      <span className="text-slate-500 w-32">{v.lastModifiedBy?.user?.displayName || '—'}</span>
+                                      <span className="text-slate-400">{formatFileSize(v.size)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )
       )}
 
       <FormModal open={modalOpen} onClose={() => { setModalOpen(false); setEditItem(null); }} onSubmit={handleSubmit} title={editItem ? 'Edit Policy' : 'Add Policy'} fields={policyFields} initialData={editItem || {}} loading={loading} />

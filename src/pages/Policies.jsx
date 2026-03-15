@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Plus, FileText, Pencil, Cloud, ExternalLink, Check, Wifi, WifiOff, Upload, History, ChevronDown, ChevronRight, AlertCircle } from 'lucide-react';
+import { Plus, FileText, Pencil, Cloud, ExternalLink, Check, Upload, History, ChevronDown, ChevronRight, AlertCircle } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
-import { policies as mockPolicies } from '../data/mockData';
+
 import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
+import DataSourceBadge from '../components/DataSourceBadge';
 import { useAuth } from '../hooks/useAuth';
 import * as graphService from '../lib/graphService';
 import { logAuditEvent } from '../lib/auditService';
@@ -45,7 +46,7 @@ function formatFileDate(isoDate) {
 export default function Policies() {
   const { filterByBody } = useAccreditation();
   const { isAuthenticated, user } = useAuth();
-  const { data: policiesList, loading, isLive, create, update } = useSharePointData('Policies', mockPolicies);
+  const { data: policiesList, loading, isLive, dataSource, lastRefreshed, refresh, create, update } = useSharePointData('Policies', []);
   const [tab, setTab] = useState('policies');
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -197,24 +198,24 @@ export default function Policies() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Policies & Procedures</h1>
-            {isLive ? <span className="flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium"><Wifi size={10} /> SharePoint</span> : <span className="flex items-center gap-1 text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-medium"><WifiOff size={10} /> Offline</span>}
-          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Policies & Procedures</h1>
           <p className="text-sm text-slate-500 mt-1">Version-controlled policy repository linked to accreditation standards</p>
         </div>
-        <div className="flex gap-2">
-          {tab === 'onedrive' && isAuthenticated && (
-            <>
-              <input ref={uploadInputRef} type="file" accept=".docx,.pdf,.pptx" className="hidden" onChange={handleUploadNew} />
-              <button onClick={() => uploadInputRef.current?.click()} className="bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-slate-200 hover:bg-slate-50">
-                <Upload size={16} /> Upload Document
-              </button>
-            </>
-          )}
-          <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700">
-            <Plus size={16} /> Add Policy
-          </button>
+        <div className="flex items-center gap-3">
+          <DataSourceBadge dataSource={dataSource} lastRefreshed={lastRefreshed} onRefresh={refresh} loading={loading} />
+          <div className="flex gap-2">
+            {tab === 'onedrive' && isAuthenticated && (
+              <>
+                <input ref={uploadInputRef} type="file" accept=".docx,.pdf,.pptx" className="hidden" onChange={handleUploadNew} />
+                <button onClick={() => uploadInputRef.current?.click()} className="bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-slate-200 hover:bg-slate-50">
+                  <Upload size={16} /> Upload Document
+                </button>
+              </>
+            )}
+            <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700">
+              <Plus size={16} /> Add Policy
+            </button>
+          </div>
         </div>
       </div>
 

@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Plus, AlertCircle, Pencil, Wifi, WifiOff } from 'lucide-react';
+import { Plus, AlertCircle, Pencil } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
+import DataSourceBadge from '../components/DataSourceBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
-import { incidents as mockIncidents } from '../data/mockData';
+
 import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
 import { formatDate } from '../lib/formatDate';
@@ -21,7 +22,7 @@ const incidentFields = [
 
 export default function Incidents() {
   const { filterByBody } = useAccreditation();
-  const { data: incidents, loading, isLive, create, update } = useSharePointData('Incidents', mockIncidents);
+  const { data: incidents, loading, dataSource, lastRefreshed, refresh, create, update } = useSharePointData('Incidents', []);
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -48,17 +49,13 @@ export default function Incidents() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Incident Reporting</h1>
-            {isLive ? (
-              <span className="flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium"><Wifi size={10} /> SharePoint</span>
-            ) : (
-              <span className="flex items-center gap-1 text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-medium"><WifiOff size={10} /> Offline</span>
-            )}
-          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Incident Reporting</h1>
           <p className="text-sm text-slate-500 mt-1">Unusual occurrence workflow with automatic QA notification</p>
         </div>
-        <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700"><Plus size={16} /> Report Incident</button>
+        <div className="flex items-center gap-3">
+          <DataSourceBadge dataSource={dataSource} lastRefreshed={lastRefreshed} onRefresh={refresh} loading={loading} />
+          <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700"><Plus size={16} /> Report Incident</button>
+        </div>
       </div>
 
       <div className="flex items-center justify-end mb-4">

@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { GitCompareArrows, Plus, Pencil, Trash2, Wifi, WifiOff } from 'lucide-react';
+import { GitCompareArrows, Plus, Pencil, Trash2 } from 'lucide-react';
+import DataSourceBadge from '../components/DataSourceBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
-import { crosswalk as mockCrosswalk } from '../data/mockData';
+
 import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
 
@@ -24,7 +25,7 @@ const crosswalkFields = [
 
 export default function Crosswalk() {
   const { filterByBody } = useAccreditation();
-  const { data: crosswalkData, loading, isLive, create, update, remove } = useSharePointData('Crosswalk', mockCrosswalk);
+  const { data: crosswalkData, loading, dataSource, lastRefreshed, refresh, create, update, remove } = useSharePointData('Crosswalk', []);
   const [filter, setFilter] = useState('All Categories');
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -83,19 +84,15 @@ export default function Crosswalk() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Compliance Crosswalk</h1>
-            {isLive ? (
-              <span className="flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium"><Wifi size={10} /> SharePoint</span>
-            ) : (
-              <span className="flex items-center gap-1 text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-medium"><WifiOff size={10} /> Offline</span>
-            )}
-          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Compliance Crosswalk</h1>
           <p className="text-sm text-slate-500 mt-1">Requirement mapping across CARF, TJC, State, and Federal bodies</p>
         </div>
-        <button onClick={handleAdd} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700">
-          <Plus size={16} /> Add Entry
-        </button>
+        <div className="flex items-center gap-3">
+          <DataSourceBadge dataSource={dataSource} lastRefreshed={lastRefreshed} onRefresh={refresh} loading={loading} />
+          <button onClick={handleAdd} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700">
+            <Plus size={16} /> Add Entry
+          </button>
+        </div>
       </div>
 
       {/* Category counts */}

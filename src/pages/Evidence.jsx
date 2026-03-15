@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { FileCheck2, Plus, Pencil, Trash2, Wifi, WifiOff } from 'lucide-react';
+import { FileCheck2, Plus, Pencil, Trash2 } from 'lucide-react';
+import DataSourceBadge from '../components/DataSourceBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
-import { evidence as mockEvidence } from '../data/mockData';
+
 import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
 import { formatDate } from '../lib/formatDate';
@@ -29,7 +30,7 @@ const evidenceFields = [
 
 export default function Evidence() {
   const { filterByBody } = useAccreditation();
-  const { data: evidenceData, loading, isLive, create, update, remove } = useSharePointData('Evidence', mockEvidence);
+  const { data: evidenceData, loading, dataSource, lastRefreshed, refresh, create, update, remove } = useSharePointData('Evidence', []);
   const [filter, setFilter] = useState('All Statuses');
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -91,19 +92,15 @@ export default function Evidence() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Evidence Tracker</h1>
-            {isLive ? (
-              <span className="flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium"><Wifi size={10} /> SharePoint</span>
-            ) : (
-              <span className="flex items-center gap-1 text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-medium"><WifiOff size={10} /> Offline</span>
-            )}
-          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Evidence Tracker</h1>
           <p className="text-sm text-slate-500 mt-1">Evidence documents linked to accreditation standards with status tracking</p>
         </div>
-        <button onClick={handleAdd} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700">
-          <Plus size={16} /> Add Evidence
-        </button>
+        <div className="flex items-center gap-3">
+          <DataSourceBadge dataSource={dataSource} lastRefreshed={lastRefreshed} onRefresh={refresh} loading={loading} />
+          <button onClick={handleAdd} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700">
+            <Plus size={16} /> Add Evidence
+          </button>
+        </div>
       </div>
 
       {/* Status counts */}

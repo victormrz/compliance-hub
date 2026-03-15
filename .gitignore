@@ -26,3 +26,4 @@ dist-ssr
 
 # Production reference data (not committed)
 reference/
+scripts/.token-cache.json

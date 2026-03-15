@@ -1,21 +1,10 @@
 import { useState } from 'react';
-import { Calendar, Plus, AlertTriangle, CheckCircle2, Pencil, Wifi, WifiOff } from 'lucide-react';
+import { Calendar, Plus, AlertTriangle, CheckCircle2, Pencil } from 'lucide-react';
+import DataSourceBadge from '../components/DataSourceBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
 import { useSharePointData } from '../hooks/useSharePointData';
 import { formatDate } from '../lib/formatDate';
-
-const mockShifts = [
-  { id: 1, shift: "Day (7a-3p)", date: "2026-03-13", clients: 32, clinical: 3, nursing: 2, peers: 2, ratio: "1:5.3", required: "1:8", compliant: true },
-  { id: 2, shift: "Evening (3p-11p)", date: "2026-03-13", clients: 32, clinical: 2, nursing: 2, peers: 1, ratio: "1:6.4", required: "1:8", compliant: true },
-  { id: 3, shift: "Night (11p-7a)", date: "2026-03-13", clients: 32, clinical: 1, nursing: 1, peers: 1, ratio: "1:10.7", required: "1:8", compliant: false },
-  { id: 4, shift: "Day (7a-3p)", date: "2026-03-12", clients: 30, clinical: 3, nursing: 2, peers: 2, ratio: "1:4.3", required: "1:8", compliant: true },
-  { id: 5, shift: "Evening (3p-11p)", date: "2026-03-12", clients: 30, clinical: 2, nursing: 2, peers: 2, ratio: "1:5.0", required: "1:8", compliant: true },
-  { id: 6, shift: "Night (11p-7a)", date: "2026-03-12", clients: 30, clinical: 1, nursing: 1, peers: 1, ratio: "1:10.0", required: "1:8", compliant: false },
-  { id: 7, shift: "Day (7a-3p)", date: "2026-03-11", clients: 28, clinical: 3, nursing: 2, peers: 2, ratio: "1:4.0", required: "1:8", compliant: true },
-  { id: 8, shift: "Evening (3p-11p)", date: "2026-03-11", clients: 28, clinical: 2, nursing: 1, peers: 2, ratio: "1:5.6", required: "1:8", compliant: true },
-  { id: 9, shift: "Night (11p-7a)", date: "2026-03-11", clients: 28, clinical: 1, nursing: 1, peers: 0, ratio: "1:14.0", required: "1:8", compliant: false },
-];
 
 const staffingFields = [
   { key: 'date', label: 'Date', type: 'date', required: true },
@@ -27,7 +16,7 @@ const staffingFields = [
 ];
 
 export default function DailyStaffing() {
-  const { data: shifts, loading, isLive, create, update } = useSharePointData('DailyStaffing', mockShifts);
+  const { data: shifts, loading, dataSource, lastRefreshed, refresh, create, update } = useSharePointData('DailyStaffing', []);
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -59,13 +48,13 @@ export default function DailyStaffing() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Daily Staffing</h1>
-            {isLive ? <span className="flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium"><Wifi size={10} /> SharePoint</span> : <span className="flex items-center gap-1 text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-medium"><WifiOff size={10} /> Offline</span>}
-          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Daily Staffing</h1>
           <p className="text-sm text-slate-500 mt-1">Clinician-to-patient ratios with automatic alerts when state-mandated limits are exceeded</p>
         </div>
-        <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700"><Plus size={16} /> Log Staffing</button>
+        <div className="flex items-center gap-3">
+          <DataSourceBadge dataSource={dataSource} lastRefreshed={lastRefreshed} onRefresh={refresh} loading={loading} />
+          <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700"><Plus size={16} /> Log Staffing</button>
+        </div>
       </div>
 
       <div className="flex items-center justify-end mb-4">

@@ -1,20 +1,10 @@
 import { useState } from 'react';
-import { AlertTriangle, Plus, Pencil, Wifi, WifiOff } from 'lucide-react';
+import { AlertTriangle, Plus, Pencil } from 'lucide-react';
+import DataSourceBadge from '../components/DataSourceBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
 import { useSharePointData } from '../hooks/useSharePointData';
 import { formatDate } from '../lib/formatDate';
-
-// Outpatient SUD facility — no bedrooms/residential wings
-const mockAreas = [
-  { id: 1, location: "Individual Counseling Offices", riskLevel: "Medium", items: 3, lastAssessed: "2026-02-15", nextDue: "2026-05-15", capStatus: "In Progress" },
-  { id: 2, location: "Group Therapy Room", riskLevel: "Low", items: 1, lastAssessed: "2026-02-15", nextDue: "2026-05-15", capStatus: "Complete" },
-  { id: 3, location: "Client Restrooms", riskLevel: "High", items: 6, lastAssessed: "2026-01-10", nextDue: "2026-04-10", capStatus: "In Progress" },
-  { id: 4, location: "Reception & Waiting Area", riskLevel: "Low", items: 1, lastAssessed: "2026-02-20", nextDue: "2026-05-20", capStatus: "Complete" },
-  { id: 5, location: "Medication Dispensing Area", riskLevel: "Medium", items: 2, lastAssessed: "2026-02-20", nextDue: "2026-05-20", capStatus: "In Progress" },
-  { id: 6, location: "Staff Break Room & Kitchen", riskLevel: "Low", items: 0, lastAssessed: "2026-02-20", nextDue: "2026-05-20", capStatus: "N/A" },
-  { id: 7, location: "Outdoor Grounds & Parking", riskLevel: "Low", items: 1, lastAssessed: "2026-02-20", nextDue: "2026-05-20", capStatus: "Complete" },
-];
 
 const ligatureFields = [
   { key: 'location', label: 'Location', type: 'text', required: true, placeholder: 'e.g., Client Bedrooms - Wing A' },
@@ -26,7 +16,7 @@ const ligatureFields = [
 ];
 
 export default function LigatureRisk() {
-  const { data: areas, loading, isLive, create, update } = useSharePointData('LigatureRisk', mockAreas);
+  const { data: areas, loading, dataSource, lastRefreshed, refresh, create, update } = useSharePointData('LigatureRisk', []);
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -46,13 +36,13 @@ export default function LigatureRisk() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Ligature Risk Assessment</h1>
-            {isLive ? <span className="flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium"><Wifi size={10} /> SharePoint</span> : <span className="flex items-center gap-1 text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-medium"><WifiOff size={10} /> Offline</span>}
-          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Ligature Risk Assessment</h1>
           <p className="text-sm text-slate-500 mt-1">Interactive assessment tool with CAP tracking and due dates</p>
         </div>
-        <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700"><Plus size={16} /> New Assessment</button>
+        <div className="flex items-center gap-3">
+          <DataSourceBadge dataSource={dataSource} lastRefreshed={lastRefreshed} onRefresh={refresh} loading={loading} />
+          <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700"><Plus size={16} /> New Assessment</button>
+        </div>
       </div>
 
       <div className="flex items-center justify-end mb-4">

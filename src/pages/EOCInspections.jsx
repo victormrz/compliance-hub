@@ -1,18 +1,10 @@
 import { useState } from 'react';
-import { ClipboardCheck, Plus, Pencil, Wifi, WifiOff } from 'lucide-react';
+import { ClipboardCheck, Plus, Pencil } from 'lucide-react';
+import DataSourceBadge from '../components/DataSourceBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
 import { useSharePointData } from '../hooks/useSharePointData';
 import { formatDate } from '../lib/formatDate';
-
-const mockInspections = [
-  { id: 1, name: "Fire Extinguisher Check", frequency: "Monthly", lastDone: "2026-03-01", nextDue: "2026-04-01", status: "Current" },
-  { id: 2, name: "Water Temperature Log", frequency: "Weekly", lastDone: "2026-03-10", nextDue: "2026-03-17", status: "Current" },
-  { id: 3, name: "Ligature Risk Walkthrough", frequency: "Quarterly", lastDone: "2026-01-15", nextDue: "2026-04-15", status: "Current" },
-  { id: 4, name: "Emergency Exit Inspection", frequency: "Monthly", lastDone: "2026-02-15", nextDue: "2026-03-15", status: "Due" },
-  { id: 5, name: "Generator Test", frequency: "Monthly", lastDone: "2026-02-01", nextDue: "2026-03-01", status: "Overdue" },
-  { id: 6, name: "Smoke Detector Test", frequency: "Quarterly", lastDone: "2025-12-15", nextDue: "2026-03-15", status: "Due" },
-];
 
 const inspectionFields = [
   { key: 'name', label: 'Inspection Type', type: 'text', required: true, placeholder: 'e.g., Fire Extinguisher Check' },
@@ -23,7 +15,7 @@ const inspectionFields = [
 ];
 
 export default function EOCInspections() {
-  const { data: inspections, loading, isLive, create, update } = useSharePointData('EOCInspections', mockInspections);
+  const { data: inspections, loading, dataSource, lastRefreshed, refresh, create, update } = useSharePointData('EOCInspections', []);
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -42,13 +34,13 @@ export default function EOCInspections() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">EOC Inspections</h1>
-            {isLive ? <span className="flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium"><Wifi size={10} /> SharePoint</span> : <span className="flex items-center gap-1 text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-medium"><WifiOff size={10} /> Offline</span>}
-          </div>
+          <h1 className="text-2xl font-bold text-slate-900">EOC Inspections</h1>
           <p className="text-sm text-slate-500 mt-1">Digital inspection logs for ligature risk, water temp, fire extinguishers (TJC/CARF compliant)</p>
         </div>
-        <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700"><Plus size={16} /> New Inspection</button>
+        <div className="flex items-center gap-3">
+          <DataSourceBadge dataSource={dataSource} lastRefreshed={lastRefreshed} onRefresh={refresh} loading={loading} />
+          <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700"><Plus size={16} /> New Inspection</button>
+        </div>
       </div>
 
       <div className="flex items-center justify-end mb-4">

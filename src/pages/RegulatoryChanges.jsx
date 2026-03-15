@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
-import { Scale, Plus, Pencil, Download, AlertTriangle, CheckCircle, Clock, Wifi, WifiOff } from 'lucide-react';
+import { Scale, Plus, Pencil, Download, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
-import { regulatoryChanges as mockChanges } from '../data/mockData';
+
 import { useSharePointData } from '../hooks/useSharePointData';
+import DataSourceBadge from '../components/DataSourceBadge';
 import { exportRegulatoryChangeLog } from '../lib/exportService';
 import { useAuth } from '../hooks/useAuth';
 import { formatDate } from '../lib/formatDate';
@@ -35,7 +36,7 @@ const priorityColors = {
 
 export default function RegulatoryChanges() {
   const { canCreate, canEdit } = useAuth();
-  const { data: changes, loading, isLive, create, update } = useSharePointData('RegulatoryChanges', mockChanges);
+  const { data: changes, loading, dataSource, lastRefreshed, refresh, create, update } = useSharePointData('RegulatoryChanges', []);
   const [tab, setTab] = useState('All Changes');
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -106,25 +107,21 @@ export default function RegulatoryChanges() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Regulatory Change Log</h1>
-            {isLive ? (
-              <span className="flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium"><Wifi size={10} /> SharePoint</span>
-            ) : (
-              <span className="flex items-center gap-1 text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-medium"><WifiOff size={10} /> Offline</span>
-            )}
-          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Regulatory Change Log</h1>
           <p className="text-sm text-slate-500 mt-1">Track CARF, Joint Commission, and State regulatory changes — board-ready audit trail</p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={handleExport} className="bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-slate-200 hover:bg-slate-50">
-            <Download size={16} /> Export
-          </button>
-          {canCreate('/regulatory-changes') && (
-            <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700">
-              <Plus size={16} /> Log Change
+        <div className="flex items-center gap-3">
+          <DataSourceBadge dataSource={dataSource} lastRefreshed={lastRefreshed} onRefresh={refresh} loading={loading} />
+          <div className="flex gap-2">
+            <button onClick={handleExport} className="bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-slate-200 hover:bg-slate-50">
+              <Download size={16} /> Export
             </button>
-          )}
+            {canCreate('/regulatory-changes') && (
+              <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700">
+                <Plus size={16} /> Log Change
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

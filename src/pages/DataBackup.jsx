@@ -1,30 +1,25 @@
 import { useState, useCallback } from 'react';
 import { Database, Download, FileJson, FileSpreadsheet, Shield, Clock, HardDrive } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useSharePointData } from '../hooks/useSharePointData';
+import DataSourceBadge from '../components/DataSourceBadge';
 import { exportToCSV, exportToJSON, exportFullBackup, exportBoardReport } from '../lib/exportService';
 import { getLocalAuditLog } from '../lib/auditService';
 
-// Import all mock data (used as fallback)
-import {
-  standards, policies, incidents, training, trainingRecords,
-  staff, credentials, licenses, facilities, complianceTasks,
-  regulatoryChanges, auditLog as mockAuditLog, contracts,
-} from '../data/mockData';
-
 const dataLists = [
-  { key: 'standards', label: 'Accreditation Standards', icon: '📋', count: null },
-  { key: 'policies', label: 'Policies & Procedures', icon: '📄', count: null },
-  { key: 'incidents', label: 'Incident Reports', icon: '🚨', count: null },
-  { key: 'training', label: 'Training Courses', icon: '🎓', count: null },
-  { key: 'trainingRecords', label: 'Training Records', icon: '📝', count: null },
-  { key: 'personnel', label: 'Personnel & HR', icon: '👥', count: null },
-  { key: 'credentials', label: 'Credentialing', icon: '🔑', count: null },
-  { key: 'licenses', label: 'Licenses & Permits', icon: '📜', count: null },
-  { key: 'facilities', label: 'Facilities', icon: '🏥', count: null },
-  { key: 'regulatoryChanges', label: 'Regulatory Changes', icon: '⚖️', count: null },
-  { key: 'complianceTasks', label: 'Compliance Tasks', icon: '✅', count: null },
-  { key: 'contracts', label: 'Contracts & BAAs', icon: '📑', count: null },
-  { key: 'auditLog', label: 'Audit Trail', icon: '📊', count: null },
+  { key: 'standards', label: 'Accreditation Standards', icon: '📋', listName: 'Standards' },
+  { key: 'policies', label: 'Policies & Procedures', icon: '📄', listName: 'Policies' },
+  { key: 'incidents', label: 'Incident Reports', icon: '🚨', listName: 'Incidents' },
+  { key: 'training', label: 'Training Courses', icon: '🎓', listName: 'Training' },
+  { key: 'trainingRecords', label: 'Training Records', icon: '📝', listName: 'TrainingRecords' },
+  { key: 'personnel', label: 'Personnel & HR', icon: '👥', listName: 'Personnel' },
+  { key: 'credentials', label: 'Credentialing', icon: '🔑', listName: 'Credentials' },
+  { key: 'licenses', label: 'Licenses & Permits', icon: '📜', listName: 'Licenses' },
+  { key: 'facilities', label: 'Facilities', icon: '🏥', listName: 'Facilities' },
+  { key: 'regulatoryChanges', label: 'Regulatory Changes', icon: '⚖️', listName: 'RegulatoryChanges' },
+  { key: 'complianceTasks', label: 'Compliance Tasks', icon: '✅', listName: 'ComplianceTasks' },
+  { key: 'contracts', label: 'Contracts & BAAs', icon: '📑', listName: 'Contracts' },
+  { key: 'auditLog', label: 'Audit Trail', icon: '📊', listName: null },
 ];
 
 export default function DataBackup() {
@@ -32,41 +27,69 @@ export default function DataBackup() {
   const [lastBackup, setLastBackup] = useState(localStorage.getItem('lastBackupDate') || null);
   const [exporting, setExporting] = useState(null);
 
-  // Get current data (mock fallback)
-  const getCurrentData = useCallback(() => ({
-    standards,
-    policies,
-    incidents,
-    training,
-    trainingRecords,
-    personnel: staff,
-    credentials,
-    licenses,
-    facilities,
-    regulatoryChanges,
-    complianceTasks,
-    contracts,
-    auditLog: getLocalAuditLog().length > 0 ? getLocalAuditLog() : mockAuditLog,
-    exportedBy: user?.name || 'ComplianceHub',
-  }), [user]);
+  // Live data from SharePoint — no mock fallback
+  const std = useSharePointData('Standards', []);
+  const pol = useSharePointData('Policies', []);
+  const inc = useSharePointData('Incidents', []);
+  const trn = useSharePointData('Training', []);
+  const rec = useSharePointData('TrainingRecords', []);
+  const per = useSharePointData('Personnel', []);
+  const crd = useSharePointData('Credentials', []);
+  const lic = useSharePointData('Licenses', []);
+  const fac = useSharePointData('Facilities', []);
+  const reg = useSharePointData('RegulatoryChanges', []);
+  const tsk = useSharePointData('ComplianceTasks', []);
+  const con = useSharePointData('Contracts', []);
 
-  const listCounts = {
-    standards: standards.length,
-    policies: policies.length,
-    incidents: incidents.length,
-    training: training.length,
-    trainingRecords: trainingRecords.length,
-    personnel: staff.length,
-    credentials: credentials.length,
-    licenses: licenses.length,
-    facilities: facilities.length,
-    regulatoryChanges: regulatoryChanges.length,
-    complianceTasks: complianceTasks.length,
-    contracts: contracts.length,
-    auditLog: getLocalAuditLog().length || mockAuditLog.length,
+  // Determine worst data source for badge
+  const allHooks = [std, pol, inc, trn, rec, per, crd, lic, fac, reg, tsk, con];
+  const anyLoading = allHooks.some(h => h.loading);
+  const worstSource = allHooks.some(h => h.dataSource === 'offline') ? 'offline'
+    : allHooks.some(h => h.dataSource === 'cached') ? 'cached'
+    : allHooks.some(h => h.dataSource === 'loading') ? 'loading'
+    : 'live';
+  const oldestRefresh = allHooks.map(h => h.lastRefreshed).filter(Boolean).sort((a, b) => a - b)[0] || null;
+  const refreshAll = async () => { await Promise.all(allHooks.map(h => h.refresh())); };
+
+  const liveData = {
+    standards: std.data,
+    policies: pol.data,
+    incidents: inc.data,
+    training: trn.data,
+    trainingRecords: rec.data,
+    personnel: per.data,
+    credentials: crd.data,
+    licenses: lic.data,
+    facilities: fac.data,
+    regulatoryChanges: reg.data,
+    complianceTasks: tsk.data,
+    contracts: con.data,
+    auditLog: getLocalAuditLog(),
   };
 
+  const listCounts = {};
+  for (const [key, val] of Object.entries(liveData)) {
+    listCounts[key] = val.length;
+  }
   const totalRecords = Object.values(listCounts).reduce((s, n) => s + n, 0);
+
+  const getCurrentData = useCallback(() => ({
+    standards: std.data,
+    policies: pol.data,
+    incidents: inc.data,
+    training: trn.data,
+    trainingRecords: rec.data,
+    personnel: per.data,
+    credentials: crd.data,
+    licenses: lic.data,
+    facilities: fac.data,
+    regulatoryChanges: reg.data,
+    complianceTasks: tsk.data,
+    contracts: con.data,
+    auditLog: getLocalAuditLog(),
+    exportedBy: user?.name || 'ComplianceHub',
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [user]);
 
   const handleExportCSV = (key) => {
     setExporting(key);
@@ -97,7 +120,6 @@ export default function DataBackup() {
   const handleBoardReport = () => {
     setExporting('board');
     const data = getCurrentData();
-    data.auditLog = getLocalAuditLog().length > 0 ? getLocalAuditLog() : mockAuditLog;
     exportBoardReport(data);
     setTimeout(() => setExporting(null), 500);
   };
@@ -115,6 +137,7 @@ export default function DataBackup() {
           </div>
           <p className="text-sm text-slate-500 mt-1">Export and backup all compliance data for disaster recovery and board presentations</p>
         </div>
+        <DataSourceBadge dataSource={worstSource} lastRefreshed={oldestRefresh} onRefresh={refreshAll} loading={anyLoading} />
       </div>
 
       {/* Summary Stats */}

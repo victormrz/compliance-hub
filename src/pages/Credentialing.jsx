@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Shield, Plus, Pencil, Wifi, WifiOff, Lock } from 'lucide-react';
+import { Shield, Plus, Pencil, Lock } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
+import DataSourceBadge from '../components/DataSourceBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
-import { credentials as mockCredentials } from '../data/mockData';
+
 import { useSharePointData } from '../hooks/useSharePointData';
 import { useAuth } from '../hooks/useAuth';
 import { canAccessCredentialing } from '../lib/roles';
@@ -21,7 +22,7 @@ const credentialFields = [
 export default function Credentialing() {
   const { user } = useAuth();
   const authorized = canAccessCredentialing(user?.email);
-  const { data: rawCredentials, loading, isLive, create, update } = useSharePointData('Credentials', mockCredentials);
+  const { data: rawCredentials, loading, dataSource, lastRefreshed, refresh, create, update } = useSharePointData('Credentials', []);
 
   // Compute daysLeft and dynamic status
   const credentialsList = rawCredentials.map(c => {
@@ -77,15 +78,15 @@ export default function Credentialing() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Provider Credentialing</h1>
-            {isLive ? <span className="flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium"><Wifi size={10} /> SharePoint</span> : <span className="flex items-center gap-1 text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-medium"><WifiOff size={10} /> Offline</span>}
-          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Provider Credentialing</h1>
           <p className="text-sm text-slate-500 mt-1">CAQH, NPI, Medicare/Medicaid enrollment tracking</p>
         </div>
-        <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700">
-          <Plus size={16} /> Add Credential
-        </button>
+        <div className="flex items-center gap-3">
+          <DataSourceBadge dataSource={dataSource} lastRefreshed={lastRefreshed} onRefresh={refresh} loading={loading} />
+          <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700">
+            <Plus size={16} /> Add Credential
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-6">

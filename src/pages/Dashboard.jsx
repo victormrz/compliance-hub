@@ -3,22 +3,52 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Building2, FileKey, Users, ClipboardCheck, AlertCircle, AlertTriangle } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import StatusBadge from '../components/StatusBadge';
-import { complianceTasks as mockTasks, licenses as mockLicenses, incidents as mockIncidents, training as mockTraining, trainingRecords as mockTrainingRecords, facilities as mockFacilities, staff as mockStaff } from '../data/mockData';
+import DataSourceBadge from '../components/DataSourceBadge';
+import LoadingSkeleton from '../components/LoadingSkeleton';
+
 import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
+
+const POLL_INTERVAL = 60000; // 60s auto-refresh
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { filterByBody, body, bodyLabels } = useAccreditation();
 
-  // All data through hooks — never read mock imports directly for display
-  const { data: complianceTasks } = useSharePointData('ComplianceTasks', mockTasks);
-  const { data: licenses } = useSharePointData('Licenses', mockLicenses);
-  const { data: incidents } = useSharePointData('Incidents', mockIncidents);
-  const { data: training } = useSharePointData('Training', mockTraining);
-  const { data: trainingRecordsList } = useSharePointData('TrainingRecords', mockTrainingRecords);
-  const { data: facilitiesList } = useSharePointData('Facilities', mockFacilities);
-  const { data: staffList } = useSharePointData('Personnel', mockStaff);
+  // All data through hooks with 60s polling — never read mock imports directly
+  const tasks = useSharePointData('ComplianceTasks', [], { refreshInterval: POLL_INTERVAL });
+  const lic = useSharePointData('Licenses', [], { refreshInterval: POLL_INTERVAL });
+  const inc = useSharePointData('Incidents', [], { refreshInterval: POLL_INTERVAL });
+  const trn = useSharePointData('Training', [], { refreshInterval: POLL_INTERVAL });
+  const rec = useSharePointData('TrainingRecords', [], { refreshInterval: POLL_INTERVAL });
+  const fac = useSharePointData('Facilities', [], { refreshInterval: POLL_INTERVAL });
+  const stf = useSharePointData('Personnel', [], { refreshInterval: POLL_INTERVAL });
+
+  // Determine worst-case data source across all hooks for the badge
+  const allSources = [tasks, lic, inc, trn, rec, fac, stf];
+  const anyLoading = allSources.some(h => h.loading);
+  const worstSource = allSources.some(h => h.dataSource === 'offline') ? 'offline'
+    : allSources.some(h => h.dataSource === 'cached') ? 'cached'
+    : allSources.some(h => h.dataSource === 'loading') ? 'loading'
+    : 'live';
+  // Use the oldest lastRefreshed across all hooks
+  const oldestRefresh = allSources
+    .map(h => h.lastRefreshed)
+    .filter(Boolean)
+    .sort((a, b) => a - b)[0] || null;
+
+  // Manual refresh all hooks
+  const refreshAll = async () => {
+    await Promise.all(allSources.map(h => h.refresh()));
+  };
+
+  const complianceTasks = tasks.data;
+  const licenses = lic.data;
+  const incidents = inc.data;
+  const training = trn.data;
+  const trainingRecordsList = rec.data;
+  const facilitiesList = fac.data;
+  const staffList = stf.data;
 
   // Filter data by selected accreditation body
   const filteredTasks = filterByBody(complianceTasks);
@@ -55,11 +85,32 @@ export default function Dashboard() {
 
   const activeLabel = body !== 'all' ? ` — ${bodyLabels[body]}` : '';
 
+  // Show skeleton while initial data loads (no mock flash)
+  if (anyLoading && worstSource === 'loading') {
+    return (
+      <div>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-slate-900">Compliance Dashboard</h1>
+          <p className="text-sm text-slate-500 mt-1">Loading real-time data from SharePoint...</p>
+        </div>
+        <LoadingSkeleton rows={6} columns={6} />
+      </div>
+    );
+  }
+
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Compliance Dashboard</h1>
-        <p className="text-sm text-slate-500 mt-1">Real-time compliance health across all facilities{activeLabel}</p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Compliance Dashboard</h1>
+          <p className="text-sm text-slate-500 mt-1">Real-time compliance health across all facilities{activeLabel}</p>
+        </div>
+        <DataSourceBadge
+          dataSource={worstSource}
+          lastRefreshed={oldestRefresh}
+          onRefresh={refreshAll}
+          loading={anyLoading}
+        />
       </div>
 
       {/* Health Score + Alert Summary */}

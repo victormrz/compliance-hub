@@ -1,10 +1,17 @@
 /**
  * Shared MSAL auth module for ComplianceHub SharePoint provisioning.
  * Uses device code flow — Victor runs manually, authenticates in browser.
+ * Token is cached to disk so you only authenticate once per hour.
  */
 import "isomorphic-fetch";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { PublicClientApplication } from "@azure/msal-node";
 import { Client } from "@microsoft/microsoft-graph-client";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const TOKEN_CACHE_PATH = path.join(__dirname, ".token-cache.json");
 
 const TENANT_ID = "be7f6450-b41a-45e7-8995-23c2a419e1e6";
 const CLIENT_ID = "651dbe03-ed62-44b3-a6a9-0151359eb775";
@@ -21,16 +28,49 @@ const msalConfig = {
 const scopes = [
   "https://graph.microsoft.com/Sites.Manage.All",
   "https://graph.microsoft.com/Sites.ReadWrite.All",
+  "https://graph.microsoft.com/Files.ReadWrite.All",
+  "https://graph.microsoft.com/User.Read.All",
 ];
 
-let cachedToken = null;
+/**
+ * Load cached token from disk if still valid.
+ */
+function loadCachedToken() {
+  try {
+    if (fs.existsSync(TOKEN_CACHE_PATH)) {
+      const data = JSON.parse(fs.readFileSync(TOKEN_CACHE_PATH, "utf8"));
+      if (data.accessToken && new Date(data.expiresOn) > new Date()) {
+        return data;
+      }
+    }
+  } catch {
+    // Ignore corrupt cache
+  }
+  return null;
+}
+
+/**
+ * Save token to disk for reuse across script runs.
+ */
+function saveCachedToken(result) {
+  const data = {
+    accessToken: result.accessToken,
+    expiresOn: result.expiresOn.toISOString(),
+    account: { username: result.account.username },
+  };
+  fs.writeFileSync(TOKEN_CACHE_PATH, JSON.stringify(data, null, 2));
+}
 
 /**
  * Authenticate via device code flow and return an access token.
+ * Reuses cached token from disk if still valid.
  */
 export async function getAccessToken() {
-  if (cachedToken && cachedToken.expiresOn > new Date()) {
-    return cachedToken.accessToken;
+  // Check disk cache first
+  const cached = loadCachedToken();
+  if (cached) {
+    console.log(`Using cached token for: ${cached.account.username}`);
+    return cached.accessToken;
   }
 
   const pca = new PublicClientApplication(msalConfig);
@@ -47,7 +87,7 @@ export async function getAccessToken() {
   };
 
   const result = await pca.acquireTokenByDeviceCode(deviceCodeRequest);
-  cachedToken = result;
+  saveCachedToken(result);
   console.log(`Authenticated as: ${result.account.username}`);
   return result.accessToken;
 }

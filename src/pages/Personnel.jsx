@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Users, Plus, Pencil, CheckCircle2, XCircle, Wifi, WifiOff } from 'lucide-react';
+import { Users, Plus, Pencil, CheckCircle2, XCircle } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
+import DataSourceBadge from '../components/DataSourceBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
-import { staff as mockStaff } from '../data/mockData';
+
 import { useSharePointData } from '../hooks/useSharePointData';
 import { formatDate } from '../lib/formatDate';
 
@@ -20,7 +21,7 @@ const personnelFields = [
 ];
 
 export default function Personnel() {
-  const { data: staffList, loading, isLive, create, update } = useSharePointData('Personnel', mockStaff);
+  const { data: staffList, loading, dataSource, lastRefreshed, refresh, create, update } = useSharePointData('Personnel', []);
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -47,13 +48,13 @@ export default function Personnel() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-slate-900">Personnel & HR</h1>
-            {isLive ? <span className="flex items-center gap-1 text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium"><Wifi size={10} /> SharePoint</span> : <span className="flex items-center gap-1 text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-medium"><WifiOff size={10} /> Offline</span>}
-          </div>
+          <h1 className="text-2xl font-bold text-slate-900">Personnel & HR</h1>
           <p className="text-sm text-slate-500 mt-1">Staff credentials, OIG exclusion checks, background checks, TB test tracking</p>
         </div>
-        <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700"><Plus size={16} /> Add Employee</button>
+        <div className="flex items-center gap-3">
+          <DataSourceBadge dataSource={dataSource} lastRefreshed={lastRefreshed} onRefresh={refresh} loading={loading} />
+          <button onClick={() => { setEditItem(null); setModalOpen(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-indigo-700"><Plus size={16} /> Add Employee</button>
+        </div>
       </div>
 
       <div className="flex items-center justify-end mb-4">

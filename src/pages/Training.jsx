@@ -6,6 +6,7 @@ import FormModal from '../components/FormModal';
 import { training as mockTraining, trainingRecords as mockTrainingRecords } from '../data/mockData';
 import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
+import { formatDate } from '../lib/formatDate';
 
 const trainingFields = [
   { key: 'course', label: 'Course Name', type: 'text', required: true, placeholder: 'e.g., HIPAA Privacy & Security' },
@@ -141,8 +142,8 @@ export default function Training() {
                   <tr key={r.id || i} className="border-b border-slate-100 hover:bg-slate-50">
                     <td className="px-5 py-4 text-sm font-medium text-slate-900">{r.employee}</td>
                     <td className="px-5 py-4 text-sm text-slate-600">{r.course}</td>
-                    <td className="px-5 py-4 text-sm text-slate-600">{r.dueDate}</td>
-                    <td className="px-5 py-4 text-sm text-slate-600">{r.completedDate || '—'}</td>
+                    <td className="px-5 py-4 text-sm text-slate-600">{formatDate(r.dueDate)}</td>
+                    <td className="px-5 py-4 text-sm text-slate-600">{formatDate(r.completedDate)}</td>
                     <td className="px-5 py-4"><StatusBadge status={r.status} /></td>
                   </tr>
                 ))}

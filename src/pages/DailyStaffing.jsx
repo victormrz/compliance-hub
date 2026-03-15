@@ -3,6 +3,7 @@ import { Calendar, Plus, AlertTriangle, CheckCircle2, Pencil, Wifi, WifiOff } fr
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
 import { useSharePointData } from '../hooks/useSharePointData';
+import { formatDate } from '../lib/formatDate';
 
 const mockShifts = [
   { id: 1, shift: "Day (7a-3p)", date: "2026-03-13", clients: 32, clinical: 3, nursing: 2, peers: 2, ratio: "1:5.3", required: "1:8", compliant: true },
@@ -102,7 +103,7 @@ export default function DailyStaffing() {
             <tbody>
               {filtered.map((s, i) => (
                 <tr key={s.id || i} className={`border-b border-slate-100 hover:bg-slate-50 ${!s.compliant ? 'bg-red-50/50' : ''}`}>
-                  <td className="px-5 py-4 text-sm text-slate-600">{s.date}</td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{formatDate(s.date)}</td>
                   <td className="px-5 py-4 text-sm font-medium text-slate-900">{s.shift}</td>
                   <td className="px-5 py-4 text-sm text-center text-slate-600">{s.clients}</td>
                   <td className="px-5 py-4 text-sm text-center text-slate-600">{s.clinical}</td>

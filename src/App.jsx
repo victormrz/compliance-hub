@@ -21,6 +21,7 @@ import RegulatoryChanges from './pages/RegulatoryChanges';
 import DataBackup from './pages/DataBackup';
 import Crosswalk from './pages/Crosswalk';
 import Evidence from './pages/Evidence';
+import UserManagement from './pages/UserManagement';
 
 export default function App() {
   const { isAuthenticated, loading } = useAuth();
@@ -69,6 +70,7 @@ export default function App() {
         <Route path="/crosswalk" element={<ProtectedRoute path="/crosswalk"><Crosswalk /></ProtectedRoute>} />
         <Route path="/evidence" element={<ProtectedRoute path="/evidence"><Evidence /></ProtectedRoute>} />
         <Route path="/data-backup" element={<ProtectedRoute path="/data-backup"><DataBackup /></ProtectedRoute>} />
+        <Route path="/user-management" element={<ProtectedRoute path="/user-management"><UserManagement /></ProtectedRoute>} />
       </Route>
     </Routes>
     </AccreditationProvider>

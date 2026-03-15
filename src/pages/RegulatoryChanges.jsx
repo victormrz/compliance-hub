@@ -7,6 +7,7 @@ import { regulatoryChanges as mockChanges } from '../data/mockData';
 import { useSharePointData } from '../hooks/useSharePointData';
 import { exportRegulatoryChangeLog } from '../lib/exportService';
 import { useAuth } from '../hooks/useAuth';
+import { formatDate } from '../lib/formatDate';
 
 const bodyTabs = ['All Changes', 'TJC', 'CARF', 'State', 'Federal'];
 
@@ -232,7 +233,7 @@ export default function RegulatoryChanges() {
                   <div>
                     <p className="text-[10px] text-slate-400 uppercase font-semibold mb-1">Compliance Deadline</p>
                     <p className={`text-sm font-medium ${isOverdue ? 'text-red-600' : daysUntil !== null && daysUntil <= 30 ? 'text-amber-600' : 'text-slate-700'}`}>
-                      {change.dueDate}
+                      {formatDate(change.dueDate)}
                       {daysUntil !== null && (
                         <span className="text-xs ml-1">
                           ({isOverdue ? `${Math.abs(daysUntil)}d overdue` : `${daysUntil}d left`})

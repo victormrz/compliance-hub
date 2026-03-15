@@ -82,7 +82,14 @@ export const complianceTasks = seedTasks.map((t, i) => ({
   body: t.body,
   assignedTo: t.assignedToRole,
   dueDate: calcDueDate(t.frequency, t.lastCompleted),
-  status: t.status,
+  status: (() => {
+    if (t.status !== 'Not Started') return t.status;
+    const due = calcDueDate(t.frequency, t.lastCompleted);
+    const daysLeft = Math.ceil((new Date(due) - new Date()) / (1000 * 60 * 60 * 24));
+    if (daysLeft < 0) return 'Overdue';
+    if (daysLeft <= 30) return 'In Progress';
+    return t.status;
+  })(),
   priority: "Medium",
   frequency: t.frequency,
   policyRef: t.policyRef,
@@ -115,17 +122,19 @@ export const staff = [
   { id: 17, name: "Mary Henson", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: false, trainingComplete: false, employmentType: "Hourly" },
 ];
 
-// ── Credentials (mock — Victor provisions manually) ──
-export const credentials = [
-  { id: 1, employee: "Amber Ramsay", type: "LPCC License", issuingBody: "KY BSLE", number: "LPCC-12345", issueDate: "2024-01-01", expirationDate: "2026-12-31", status: "Active", daysLeft: 293 },
-  { id: 2, employee: "Harold Kantar", type: "LPCC License", issuingBody: "KY BSLE", number: "LPCC-67890", issueDate: "2024-06-01", expirationDate: "2026-06-01", status: "Active", daysLeft: 445 },
-  { id: 3, employee: "Laurel Yoder", type: "RN License", issuingBody: "KY Board of Nursing", number: "RN-2024-5678", issueDate: "2024-03-01", expirationDate: "2026-03-31", status: "Critical", daysLeft: 18 },
-  { id: 4, employee: "Laurel Yoder", type: "CPR/BLS Certification", issuingBody: "AHA", number: "BLS-9012", issueDate: "2024-06-01", expirationDate: "2026-06-01", status: "Active", daysLeft: 445 },
-  { id: 5, employee: "Matthew Otto", type: "Peer Support Certification", issuingBody: "KY DBHDID", number: "PSS-3456", issueDate: "2024-06-01", expirationDate: "2026-06-01", status: "Active", daysLeft: 445 },
-  { id: 6, employee: "Amber Ramsay", type: "NPI Number", issuingBody: "CMS", number: "1234567890", issueDate: "2023-01-01", expirationDate: null, status: "Active", daysLeft: null },
-  { id: 7, employee: "Harold Kantar", type: "CAQH Profile", issuingBody: "CAQH", number: "CAQH-11223", issueDate: "2024-01-15", expirationDate: "2026-07-15", status: "Active", daysLeft: 489 },
-  { id: 8, employee: "Keith Rapp", type: "CPR/BLS Certification", issuingBody: "AHA", number: "BLS-4455", issueDate: "2024-01-01", expirationDate: "2026-01-01", status: "Expired", daysLeft: -71 },
-];
+// ── Credentials (real data from Credentialing 2025 folder) ──
+import seedCredentials from './seeds/credentials.json';
+export const credentials = seedCredentials.map((c, i) => {
+  const daysLeft = c.expirationDate
+    ? Math.ceil((new Date(c.expirationDate) - new Date()) / (1000 * 60 * 60 * 24))
+    : null;
+  let status = c.status;
+  if (daysLeft !== null) {
+    if (daysLeft < 0) status = 'Expired';
+    else if (daysLeft <= 90) status = 'Critical';
+  }
+  return { id: i + 1, ...c, daysLeft, status };
+});
 
 // ── Training Records (mock — links employees to courses) ──
 export const trainingRecords = [

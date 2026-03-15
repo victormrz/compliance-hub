@@ -6,6 +6,7 @@ import FormModal from '../components/FormModal';
 import { incidents as mockIncidents } from '../data/mockData';
 import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
+import { formatDate } from '../lib/formatDate';
 
 const incidentFields = [
   { key: 'date', label: 'Date', type: 'date', required: true },
@@ -94,7 +95,7 @@ export default function Incidents() {
             <tbody>
               {filteredIncidents.map(inc => (
                 <tr key={inc.id} className="border-b border-slate-100 hover:bg-slate-50">
-                  <td className="px-5 py-4 text-sm text-slate-600">{inc.date}</td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{formatDate(inc.date)}</td>
                   <td className="px-5 py-4 text-sm font-medium text-slate-900">{inc.type}</td>
                   <td className="px-5 py-4 text-sm text-slate-600">{inc.facility}</td>
                   <td className="px-5 py-4"><StatusBadge status={inc.severity} /></td>

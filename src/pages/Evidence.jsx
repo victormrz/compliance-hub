@@ -5,6 +5,7 @@ import FormModal from '../components/FormModal';
 import { evidence as mockEvidence } from '../data/mockData';
 import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
+import { formatDate } from '../lib/formatDate';
 
 const statusFilters = ['All Statuses', 'Current', 'Missing', 'Outdated', 'Under Review'];
 
@@ -187,7 +188,7 @@ export default function Evidence() {
                     </span>
                   </td>
                   <td className="px-5 py-4 text-sm text-slate-500 font-mono">{item.location || '—'}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{item.lastUpdated || '—'}</td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{formatDate(item.lastUpdated)}</td>
                   <td className="px-5 py-4 text-sm text-slate-600">{item.uploadedBy || '—'}</td>
                   <td className="px-5 py-4">
                     <div className="flex gap-2">

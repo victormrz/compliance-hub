@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ScrollText, Download, Filter, Trash2, ArrowUpDown, Clock, User, FileText } from 'lucide-react';
 import SearchInput from '../components/SearchInput';
-import { auditLog as mockAuditLog } from '../data/mockData';
 import { getLocalAuditLog, clearLocalAuditLog, exportAuditLog } from '../lib/auditService';
 import { exportToCSV } from '../lib/exportService';
 import { useAuth } from '../hooks/useAuth';
@@ -23,13 +22,10 @@ export default function AuditLog() {
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [sortDesc, setSortDesc] = useState(true);
 
-  // Merge localStorage audit events with mock data
+  // Real audit events only — no mock data
   const allEvents = useMemo(() => {
     const localEvents = getLocalAuditLog();
-    const mockIds = new Set(mockAuditLog.map(e => e.id));
-    const localOnly = localEvents.filter(e => !mockIds.has(e.id));
-    const merged = [...localOnly, ...mockAuditLog];
-    return merged.sort((a, b) =>
+    return localEvents.sort((a, b) =>
       sortDesc
         ? new Date(b.timestamp) - new Date(a.timestamp)
         : new Date(a.timestamp) - new Date(b.timestamp)
@@ -102,6 +98,11 @@ export default function AuditLog() {
           <p className="text-sm text-slate-500 mt-1">Complete change history for compliance surveys and board review</p>
         </div>
         <div className="flex gap-2">
+          {isAdmin && (
+            <button onClick={() => { if (window.confirm('Clear all local audit events? This cannot be undone.')) { clearLocalAuditLog(); window.location.reload(); } }} className="bg-white text-red-600 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-red-200 hover:bg-red-50">
+              <Trash2 size={16} /> Clear Log
+            </button>
+          )}
           <button onClick={handleExport} className="bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-slate-200 hover:bg-slate-50">
             <Download size={16} /> Export CSV
           </button>

@@ -1,14 +1,17 @@
 import { useState } from 'react';
-import { Shield, Plus, Pencil, Wifi, WifiOff } from 'lucide-react';
+import { Shield, Plus, Pencil, Wifi, WifiOff, Lock } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
 import { credentials as mockCredentials } from '../data/mockData';
 import { useSharePointData } from '../hooks/useSharePointData';
+import { useAuth } from '../hooks/useAuth';
+import { canAccessCredentialing } from '../lib/roles';
+import { formatDate, daysUntil } from '../lib/formatDate';
 
 const credentialFields = [
   { key: 'employee', label: 'Employee', type: 'text', required: true, placeholder: 'e.g., Dr. Michael Chen' },
-  { key: 'type', label: 'Credential Type', type: 'select', required: true, options: ['Medical License', 'DEA Registration', 'NPI Number', 'Board Certification', 'State License', 'CAQH Profile', 'Medicare Enrollment', 'Medicaid Enrollment'] },
+  { key: 'type', label: 'Credential Type', type: 'select', required: true, options: ['LPCC', 'LCSW', 'LCADC', 'LPCA', 'APRN', 'CSW', 'CADC', 'TCM', 'RN', 'LPN', 'MD/DO', 'DEA', 'NPI', 'Board Cert', 'Peer Support', 'CPR/BLS', 'CAQH', 'Medicare', 'Medicaid', 'COI', 'CLIA', 'EIN'] },
   { key: 'issuingBody', label: 'Issuing Body', type: 'text', required: true, placeholder: 'e.g., KY Board of Medical Licensure' },
   { key: 'number', label: 'Credential Number', type: 'text', required: true, placeholder: 'e.g., KY-12345' },
   { key: 'expirationDate', label: 'Expiration Date', type: 'date' },
@@ -16,7 +19,22 @@ const credentialFields = [
 ];
 
 export default function Credentialing() {
-  const { data: credentialsList, loading, isLive, create, update } = useSharePointData('Credentials', mockCredentials);
+  const { user } = useAuth();
+  const authorized = canAccessCredentialing(user?.email);
+  const { data: rawCredentials, loading, isLive, create, update } = useSharePointData('Credentials', mockCredentials);
+
+  // Compute daysLeft and dynamic status
+  const credentialsList = rawCredentials.map(c => {
+    const exp = c.expirationDate || null;
+    const left = daysUntil(exp);
+    let status = c.status || 'Active';
+    if (left !== null) {
+      if (left < 0) status = 'Expired';
+      else if (left <= 90) status = 'Critical';
+    }
+    return { ...c, expirationDate: exp, daysLeft: left, status };
+  });
+
   const [filter, setFilter] = useState('All Credentials');
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -42,6 +60,18 @@ export default function Credentialing() {
     setModalOpen(false);
     setEditItem(null);
   };
+
+  if (!authorized) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24">
+        <Lock size={48} className="text-slate-300 mb-4" />
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Access Restricted</h2>
+        <p className="text-sm text-slate-500 text-center max-w-md">
+          The Credentialing page contains protected personal information and is restricted to authorized personnel only. Contact your administrator if you need access.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -101,7 +131,7 @@ export default function Credentialing() {
                   <td className="px-5 py-4 text-sm text-slate-600">{cred.issuingBody}</td>
                   <td className="px-5 py-4 text-sm text-slate-600 font-mono">{cred.number}</td>
                   <td className="px-5 py-4 text-sm text-slate-600">
-                    {cred.expirationDate || 'N/A'}
+                    {formatDate(cred.expirationDate)}
                     {cred.daysLeft !== null && cred.daysLeft !== undefined && <span className="text-xs text-slate-400 ml-1">({cred.daysLeft}d)</span>}
                   </td>
                   <td className="px-5 py-4"><StatusBadge status={cred.status} /></td>

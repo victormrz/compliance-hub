@@ -45,7 +45,7 @@ export default function Dashboard() {
     .sort((a, b) => a.daysLeft - b.daysLeft);
 
   const recentIncidents = [...filteredIncidents].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4);
-  const attentionTasks = filteredTasks.filter(t => t.status === "Overdue" || t.status === "In Progress")
+  const attentionTasks = filteredTasks.filter(t => t.status !== "Complete")
     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
   const activeLabel = body !== 'all' ? ` — ${bodyLabels[body]}` : '';

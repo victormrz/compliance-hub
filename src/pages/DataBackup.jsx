@@ -194,7 +194,7 @@ export default function DataBackup() {
                 </td>
                 <td className="px-5 py-3">
                   <span className="bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full text-xs font-medium">
-                    {listCounts[list.key] || 0} records
+                    {listCounts[list.key] || 0} {(listCounts[list.key] || 0) === 1 ? 'record' : 'records'}
                   </span>
                 </td>
                 <td className="px-5 py-3 text-right">

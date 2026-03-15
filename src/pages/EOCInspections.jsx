@@ -3,6 +3,7 @@ import { ClipboardCheck, Plus, Pencil, Wifi, WifiOff } from 'lucide-react';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
 import { useSharePointData } from '../hooks/useSharePointData';
+import { formatDate } from '../lib/formatDate';
 
 const mockInspections = [
   { id: 1, name: "Fire Extinguisher Check", frequency: "Monthly", lastDone: "2026-03-01", nextDue: "2026-04-01", status: "Current" },
@@ -83,8 +84,8 @@ export default function EOCInspections() {
                 <tr key={insp.id || i} className="border-b border-slate-100 hover:bg-slate-50">
                   <td className="px-5 py-4 text-sm font-medium text-slate-900">{insp.name}</td>
                   <td className="px-5 py-4 text-sm text-slate-600">{insp.frequency}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{insp.lastDone}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{insp.nextDue}</td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{formatDate(insp.lastDone)}</td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{formatDate(insp.nextDue)}</td>
                   <td className="px-5 py-4"><span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${insp.status === 'Current' ? 'bg-emerald-100 text-emerald-700' : insp.status === 'Due' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>{insp.status}</span></td>
                   <td className="px-5 py-4"><button onClick={() => { setEditItem(insp); setModalOpen(true); }} className="text-slate-400 hover:text-indigo-600"><Pencil size={14} /></button></td>
                 </tr>

@@ -34,14 +34,50 @@ async function getSiteId() {
 
 // Known array fields stored as delimited strings in SharePoint
 const ARRAY_FIELDS = new Set([
-  'standardRefs', 'evidenceRequired', 'applicablePrograms',
+  'standardRefs', 'evidenceRequired', 'applicablePrograms', 'impactedStandards',
 ]);
 
 // SharePoint column → app field aliases (where names don't match)
+// Note: SharePoint uses 'Title' as the default first column; its meaning
+// varies by list.  The normalizeFields() function outputs camelCase keys,
+// so 'Title' becomes 'title' automatically.  List-specific pages handle
+// the semantic mapping (e.g., Credentialing uses c.employee which comes
+// from the Employee column).
 const FIELD_ALIASES = {
   StandardName: 'name',
   RequirementCategory: 'category',
   PolicySeries: 'series',
+  CredentialType: 'type',
+  CredentialNumber: 'number',
+  LicenseName: 'name',
+  LicenseType: 'type',
+  IssueDate: 'issueDate',
+  ExpirationDate: 'expirationDate',
+  IssuingBody: 'issuingBody',
+  InvestigationStatus: 'investigationStatus',
+  ReportedBy: 'reportedBy',
+  StandardRef: 'standardRef',
+  HireDate: 'hireDate',
+  CredentialsComplete: 'credentialsComplete',
+  TrainingComplete: 'trainingComplete',
+  CorrectiveAction: 'correctiveAction',
+  ResolutionDate: 'resolutionDate',
+  RootCause: 'rootCause',
+  DocumentName: 'documentName',
+  StandardCode: 'standardCode',
+  StandardName: 'standardName',
+  LastUpdated: 'lastUpdated',
+  UploadedBy: 'uploadedBy',
+  PolicyNumber: 'policyNumber',
+  OwnerRole: 'ownerRole',
+  LastReviewed: 'lastReviewed',
+  NextReview: 'nextReview',
+  ChangeType: 'changeType',
+  ImpactedStandards: 'impactedStandards',
+  ActionRequired: 'actionRequired',
+  DueDate: 'dueDate',
+  AssignedTo: 'assignedTo',
+  EmploymentType: 'employmentType',
 };
 
 // Proper PascalCase → camelCase (handles acronyms: CARFStandard → carfStandard)
@@ -57,25 +93,26 @@ function normalizeFields(fields) {
     // Skip SharePoint internal fields
     if (key.startsWith('@odata') || key.startsWith('_')) continue;
 
-    // Keep original PascalCase key
-    out[key] = value;
-
-    // Add camelCase alias
-    const camel = toCamelCase(key);
-    if (camel !== key) out[camel] = value;
-
-    // Add explicit alias if one exists
+    // Determine the canonical key: alias > camelCase > original
     const alias = FIELD_ALIASES[key];
-    if (alias) out[alias] = value;
+    const camel = toCamelCase(key);
+    const canonicalKey = alias || (camel !== key ? camel : key);
+
+    let finalValue = value;
 
     // Convert delimited strings → arrays for known fields
-    const checkKey = camel !== key ? camel : key;
+    const checkKey = alias || camel;
     if (ARRAY_FIELDS.has(checkKey) && typeof value === 'string') {
       const delimiter = value.includes(';') ? /;\s*/ : /,\s*/;
-      const arr = value.split(delimiter).map(s => s.trim()).filter(Boolean);
-      out[key] = arr;
-      if (camel !== key) out[camel] = arr;
-      if (alias) out[alias] = arr;
+      finalValue = value.split(delimiter).map(s => s.trim()).filter(Boolean);
+    }
+
+    // Write canonical key (camelCase or alias)
+    out[canonicalKey] = finalValue;
+
+    // Also keep camelCase if alias differs
+    if (alias && camel !== key && camel !== alias) {
+      out[camel] = finalValue;
     }
   }
   return out;

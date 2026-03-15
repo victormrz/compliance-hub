@@ -5,6 +5,7 @@ import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
 import { staff as mockStaff } from '../data/mockData';
 import { useSharePointData } from '../hooks/useSharePointData';
+import { formatDate } from '../lib/formatDate';
 
 const personnelFields = [
   { key: 'name', label: 'Full Name', type: 'text', required: true, placeholder: 'e.g., Sarah Johnson' },
@@ -98,7 +99,7 @@ export default function Personnel() {
                   </td>
                   <td className="px-5 py-4 text-sm text-slate-600">{s.title}</td>
                   <td className="px-5 py-4"><span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs">{s.department}</span></td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{s.hireDate}</td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{formatDate(s.hireDate)}</td>
                   <td className="px-5 py-4 text-sm text-slate-600">{s.supervisor || '—'}</td>
                   <td className="px-5 py-4 text-center">{s.credentialsComplete ? <CheckCircle2 size={18} className="text-emerald-500 inline" /> : <XCircle size={18} className="text-red-500 inline" />}</td>
                   <td className="px-5 py-4 text-center">{s.trainingComplete ? <CheckCircle2 size={18} className="text-emerald-500 inline" /> : <XCircle size={18} className="text-red-500 inline" />}</td>

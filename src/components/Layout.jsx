@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Building2, FileKey, ClipboardCheck, AlertTriangle,
   Users, GraduationCap, FileText, AlertCircle, Library,
   Calendar, ChevronLeft, ChevronRight, Filter, LogOut,
-  Scale, ScrollText, Database, GitCompareArrows, FileCheck2
+  Scale, ScrollText, Database, GitCompareArrows, FileCheck2, Shield
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAccreditation } from '../hooks/useAccreditation';
@@ -28,6 +28,7 @@ const navItems = [
   { path: '/regulatory-changes', label: 'Regulatory Changes', icon: Scale },
   { path: '/audit-log', label: 'Audit Trail', icon: ScrollText },
   { path: '/data-backup', label: 'Data Backup', icon: Database },
+  { path: '/user-management', label: 'User Management', icon: Shield },
 ];
 
 const roleColors = {

@@ -21,9 +21,9 @@ export const roleAssignments = {
   'victor.rivera@roaringbrookrecovery.com': 'admin',
 
   // Managers — can manage records and staff
-  // Add manager emails below:
-  // 'sarah.mitchell@roaringbrookrecovery.com': 'manager',
-  // 'michael.chen@roaringbrookrecovery.com': 'manager',
+  'matthew@roaringbrookrecovery.com': 'manager',
+  'dave@roaringbrookrecovery.com': 'manager',
+  'hacky@roaringbrookrecovery.com': 'manager',
 
   // End Users get default role (no need to list them)
 };
@@ -90,6 +90,14 @@ export const rolePermissions = {
 export function getUserRole(email) {
   if (!email) return 'end_user';
   const normalizedEmail = email.toLowerCase().trim();
+  // Check localStorage overrides first (managed via User Management page)
+  try {
+    const overrides = JSON.parse(localStorage.getItem('compliancehub_role_overrides') || '{}');
+    if (overrides[normalizedEmail] && overrides[normalizedEmail] !== '__deleted__') {
+      return overrides[normalizedEmail];
+    }
+    if (overrides[normalizedEmail] === '__deleted__') return 'end_user';
+  } catch { /* ignore parse errors */ }
   return roleAssignments[normalizedEmail] || 'end_user';
 }
 
@@ -122,6 +130,26 @@ export function canCreateOnPage(role, path) {
 /**
  * All available roles for user management UI
  */
+/**
+ * Emails authorized to view the Credentialing page (contains PII).
+ * Admin/manager roles with these emails get access; everyone else is blocked.
+ */
+export const credentialingAuthorizedEmails = [
+  'matthew@roaringbrookrecovery.com',
+  'victor@roaringbrookrecovery.com',
+  'victor.rivera@roaringbrookrecovery.com',
+  'dave@roaringbrookrecovery.com',
+  'hacky@roaringbrookrecovery.com',
+];
+
+/**
+ * Check if user email is authorized for credentialing page
+ */
+export function canAccessCredentialing(email) {
+  if (!email) return false;
+  return credentialingAuthorizedEmails.includes(email.toLowerCase().trim());
+}
+
 export const allRoles = Object.entries(rolePermissions).map(([key, val]) => ({
   value: key,
   label: val.label,

@@ -5,18 +5,36 @@ import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
 import { licenses as mockLicenses } from '../data/mockData';
 import { useSharePointData } from '../hooks/useSharePointData';
+import { formatDate, daysUntil } from '../lib/formatDate';
 
 const licenseFields = [
   { key: 'name', label: 'License Name', type: 'text', required: true, placeholder: 'e.g., AODE License' },
   { key: 'facility', label: 'Facility', type: 'text', required: true, placeholder: 'e.g., Main Campus' },
-  { key: 'type', label: 'License Type', type: 'select', required: true, options: ['State License', 'Fire Marshal', 'Food Service', 'DEA', 'Business License', 'Accreditation', 'Other'] },
+  { key: 'type', label: 'License Type', type: 'select', required: true, options: ['State License', 'AODE', 'BHSO', 'CLIA', 'DEA', 'COI', 'Fire Marshal', 'Food Service', 'Safety Permit', 'Health Permit', 'Business License', 'Accreditation'] },
   { key: 'issueDate', label: 'Issue Date', type: 'date', required: true },
   { key: 'expirationDate', label: 'Expiration Date', type: 'date', required: true },
   { key: 'status', label: 'Status', type: 'select', required: true, options: ['Active', 'Pending', 'Critical', 'Expired'] },
 ];
 
 export default function Licenses() {
-  const { data: licensesList, loading, isLive, create, update } = useSharePointData('Licenses', mockLicenses);
+  const { data: rawLicenses, loading, isLive, create, update } = useSharePointData('Licenses', mockLicenses);
+
+  // Normalize and compute daysLeft/status
+  const licensesList = rawLicenses.map(l => {
+    const name = l.name || l.title || '';
+    const type = l.type || l.licenseType || '';
+    const facility = l.facility || '';
+    const issueDate = l.issueDate || null;
+    const expirationDate = l.expirationDate || null;
+    const left = daysUntil(expirationDate);
+    let status = l.status || 'Active';
+    if (left !== null) {
+      if (left < 0) status = 'Expired';
+      else if (left <= 90) status = 'Critical';
+    }
+    return { ...l, name, type, facility, issueDate, expirationDate, daysLeft: left, status };
+  });
+
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -88,8 +106,8 @@ export default function Licenses() {
                   <td className="px-5 py-4 text-sm font-medium text-slate-900">{l.name}</td>
                   <td className="px-5 py-4 text-sm text-slate-600">{l.facility}</td>
                   <td className="px-5 py-4"><span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs">{l.type}</span></td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{l.issueDate}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{l.expirationDate}</td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{formatDate(l.issueDate)}</td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{formatDate(l.expirationDate)}</td>
                   <td className="px-5 py-4 text-sm font-mono">{l.daysLeft < 0 ? <span className="text-red-600">{l.daysLeft}</span> : <span className={l.daysLeft <= 30 ? 'text-red-600' : l.daysLeft <= 90 ? 'text-amber-600' : 'text-slate-600'}>{l.daysLeft}</span>}</td>
                   <td className="px-5 py-4"><StatusBadge status={l.status} /></td>
                   <td className="px-5 py-4"><button onClick={() => { setEditItem(l); setModalOpen(true); }} className="text-slate-400 hover:text-indigo-600"><Pencil size={14} /></button></td>

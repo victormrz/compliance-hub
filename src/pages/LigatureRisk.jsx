@@ -3,6 +3,7 @@ import { AlertTriangle, Plus, Pencil, Wifi, WifiOff } from 'lucide-react';
 import SearchInput from '../components/SearchInput';
 import FormModal from '../components/FormModal';
 import { useSharePointData } from '../hooks/useSharePointData';
+import { formatDate } from '../lib/formatDate';
 
 const mockAreas = [
   { id: 1, location: "Client Bedrooms - Wing A", riskLevel: "Medium", items: 4, lastAssessed: "2026-02-15", nextDue: "2026-05-15", capStatus: "In Progress" },
@@ -82,8 +83,8 @@ export default function LigatureRisk() {
                   <td className="px-5 py-4 text-sm font-medium text-slate-900">{area.location}</td>
                   <td className="px-5 py-4"><span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${riskColors[area.riskLevel] || ''}`}>{area.riskLevel}</span></td>
                   <td className="px-5 py-4 text-sm text-slate-600">{area.items}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{area.lastAssessed}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{area.nextDue}</td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{formatDate(area.lastAssessed)}</td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{formatDate(area.nextDue)}</td>
                   <td className="px-5 py-4"><span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${area.capStatus === 'Complete' ? 'bg-emerald-100 text-emerald-700' : area.capStatus === 'In Progress' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'}`}>{area.capStatus}</span></td>
                   <td className="px-5 py-4"><button onClick={() => { setEditItem(area); setModalOpen(true); }} className="text-slate-400 hover:text-indigo-600"><Pencil size={14} /></button></td>
                 </tr>

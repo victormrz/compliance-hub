@@ -9,6 +9,7 @@ import { useSharePointData } from '../hooks/useSharePointData';
 import { useAuth } from '../hooks/useAuth';
 import * as graphService from '../lib/graphService';
 import { logAuditEvent } from '../lib/auditService';
+import { formatDate } from '../lib/formatDate';
 
 const policyFields = [
   { key: 'policyNumber', label: 'Policy Number', type: 'text', required: true, placeholder: 'e.g., HR-20 or TS-13' },
@@ -35,8 +36,8 @@ function formatFileSize(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-// Format date for display
-function formatDate(isoDate) {
+// Format date for display (SharePoint file metadata — uses short month format)
+function formatFileDate(isoDate) {
   if (!isoDate) return '—';
   return new Date(isoDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
@@ -271,7 +272,7 @@ export default function Policies() {
                           <span className="text-sm text-slate-600">{p.ownerRole || p.owner}</span>
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-sm text-slate-600">{p.nextReview}</td>
+                      <td className="px-5 py-4 text-sm text-slate-600">{formatDate(p.nextReview)}</td>
                       <td className="px-5 py-4"><div className="flex flex-wrap gap-1">{(p.standardRefs || []).map(ref => <span key={ref} className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-mono">{ref}</span>)}</div></td>
                       <td className="px-5 py-4"><StatusBadge status={p.status} /></td>
                       <td className="px-5 py-4">
@@ -359,7 +360,7 @@ export default function Policies() {
                             )}
                           </div>
                           <div className="px-5 py-4 w-24 text-sm text-slate-600">{formatFileSize(file.size)}</div>
-                          <div className="px-5 py-4 w-36 text-sm text-slate-600">{formatDate(file.lastModifiedDateTime)}</div>
+                          <div className="px-5 py-4 w-36 text-sm text-slate-600">{formatFileDate(file.lastModifiedDateTime)}</div>
                           <div className="px-5 py-4 w-48">
                             <div className="flex items-center gap-2 justify-end">
                               <a href={file.webUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800 text-xs font-medium flex items-center gap-1">
@@ -395,7 +396,7 @@ export default function Policies() {
                                   {versions.map((v, idx) => (
                                     <div key={v.id} className="flex items-center gap-4 text-xs py-1.5">
                                       <span className="font-mono text-slate-600 w-12">v{versions.length - idx}.0</span>
-                                      <span className="text-slate-600 w-36">{formatDate(v.lastModifiedDateTime)}</span>
+                                      <span className="text-slate-600 w-36">{formatFileDate(v.lastModifiedDateTime)}</span>
                                       <span className="text-slate-500 w-32">{v.lastModifiedBy?.user?.displayName || '—'}</span>
                                       <span className="text-slate-400">{formatFileSize(v.size)}</span>
                                     </div>

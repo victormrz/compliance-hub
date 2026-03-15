@@ -20,9 +20,9 @@ export default function Facilities() {
             <h3 className="text-lg font-semibold text-slate-900 mb-1">{f.name}</h3>
             <p className="text-sm text-slate-500 mb-3">{f.type}</p>
             <div className="space-y-2 text-sm text-slate-600">
-              <div className="flex justify-between"><span>Address</span><span className="text-slate-900">{f.address}</span></div>
-              <div className="flex justify-between"><span>Beds</span><span className="text-slate-900">{f.beds || 'N/A'}</span></div>
-              <div className="flex justify-between"><span>License</span><span className="text-slate-900 font-mono text-xs">{f.license}</span></div>
+              <div className="flex justify-between gap-4"><span className="text-slate-500 shrink-0">Address</span><span className="text-slate-900 text-right">{f.address}</span></div>
+              <div className="flex justify-between gap-4"><span className="text-slate-500 shrink-0">Beds</span><span className="text-slate-900">{f.beds || 'N/A (Outpatient)'}</span></div>
+              <div className="flex justify-between gap-4"><span className="text-slate-500 shrink-0">License</span><span className="text-slate-900 font-mono text-xs">{f.license}</span></div>
             </div>
           </div>
         ))}

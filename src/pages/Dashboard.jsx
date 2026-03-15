@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Building2, FileKey, Users, ClipboardCheck, AlertCircle, AlertTriangle } from 'lucide-react';
 import StatCard from '../components/StatCard';
@@ -7,13 +8,17 @@ import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { filterByBody, body, bodyLabels } = useAccreditation();
 
+  // All data through hooks — never read mock imports directly for display
   const { data: complianceTasks } = useSharePointData('ComplianceTasks', mockTasks);
   const { data: licenses } = useSharePointData('Licenses', mockLicenses);
   const { data: incidents } = useSharePointData('Incidents', mockIncidents);
   const { data: training } = useSharePointData('Training', mockTraining);
   const { data: trainingRecordsList } = useSharePointData('TrainingRecords', mockTrainingRecords);
+  const { data: facilitiesList } = useSharePointData('Facilities', mockFacilities);
+  const { data: staffList } = useSharePointData('Personnel', mockStaff);
 
   // Filter data by selected accreditation body
   const filteredTasks = filterByBody(complianceTasks);
@@ -66,17 +71,7 @@ export default function Dashboard() {
             <div className="relative w-48 h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie
-                    data={healthData}
-                    cx="50%"
-                    cy="50%"
-                    startAngle={90}
-                    endAngle={-270}
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={0}
-                    dataKey="value"
-                  >
+                  <Pie data={healthData} cx="50%" cy="50%" startAngle={90} endAngle={-270} innerRadius={60} outerRadius={80} paddingAngle={0} dataKey="value">
                     {healthData.map((_, index) => (
                       <Cell key={index} fill={COLORS[index]} strokeWidth={0} />
                     ))}
@@ -96,62 +91,63 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Alert Summary */}
+        {/* Alert Summary — every card navigates to the relevant page */}
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">Alert Summary</h2>
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+            <button onClick={() => navigate('/licenses')} className="bg-red-50 rounded-lg p-4 border border-red-100 text-left hover:bg-red-100 transition-colors cursor-pointer">
               <div className="flex items-center gap-2">
                 <AlertCircle size={16} className="text-red-500" />
                 <span className="text-2xl font-bold text-red-600">{expiredLicenses}</span>
               </div>
-              <p className="text-xs text-red-600 mt-1">Expired Licenses</p>
-            </div>
-            <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
+              <p className="text-xs text-red-600 mt-1">Expired Licenses →</p>
+            </button>
+            <button onClick={() => navigate('/licenses')} className="bg-amber-50 rounded-lg p-4 border border-amber-100 text-left hover:bg-amber-100 transition-colors cursor-pointer">
               <div className="flex items-center gap-2">
                 <AlertTriangle size={16} className="text-amber-500" />
                 <span className="text-2xl font-bold text-amber-600">{expiringSoon}</span>
               </div>
-              <p className="text-xs text-amber-600 mt-1">Expiring Soon (90d)</p>
-            </div>
-            <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+              <p className="text-xs text-amber-600 mt-1">Expiring Soon (90d) →</p>
+            </button>
+            <button onClick={() => navigate('/incidents')} className="bg-red-50 rounded-lg p-4 border border-red-100 text-left hover:bg-red-100 transition-colors cursor-pointer">
               <div className="flex items-center gap-2">
                 <AlertCircle size={16} className="text-red-500" />
                 <span className="text-2xl font-bold text-red-600">{openIncidents}</span>
               </div>
-              <p className="text-xs text-red-600 mt-1">Open Incidents</p>
-            </div>
-            <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
+              <p className="text-xs text-red-600 mt-1">Open Incidents →</p>
+            </button>
+            <button onClick={() => navigate('/training')} className="bg-amber-50 rounded-lg p-4 border border-amber-100 text-left hover:bg-amber-100 transition-colors cursor-pointer">
               <div className="flex items-center gap-2">
                 <AlertTriangle size={16} className="text-amber-500" />
                 <span className="text-2xl font-bold text-amber-600">{overdueTrainings}</span>
               </div>
-              <p className="text-xs text-amber-600 mt-1">Overdue Trainings</p>
-            </div>
+              <p className="text-xs text-amber-600 mt-1">Overdue Trainings →</p>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Stat Cards Row */}
+      {/* Stat Cards Row — all clickable, all from hooks */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-        <StatCard label="Facilities" value={mockFacilities.length} icon={Building2} color="indigo" />
-        <StatCard label="Active Licenses" value={licenses.filter(l => l.status === "Active").length} icon={FileKey} color="green" />
-        <StatCard label="Active Staff" value={mockStaff.filter(s => s.status === "Active").length} icon={Users} color="blue" />
-        <StatCard label="Tasks Due" value={totalTasks - completedTasks} icon={ClipboardCheck} color="amber" />
-        <StatCard label="Critical Incidents" value={filteredIncidents.filter(i => i.severity === "Critical").length} icon={AlertCircle} color="red" />
-        <StatCard label="Overdue Tasks" value={overdueTasks} icon={AlertTriangle} color="red" />
+        <StatCard label="Facilities" value={facilitiesList.length} icon={Building2} color="indigo" to="/facilities" />
+        <StatCard label="Active Licenses" value={licenses.filter(l => l.status === "Active").length} icon={FileKey} color="green" to="/licenses" />
+        <StatCard label="Active Staff" value={staffList.filter(s => s.status === "Active").length} icon={Users} color="blue" to="/personnel" />
+        <StatCard label="Tasks Due" value={totalTasks - completedTasks} icon={ClipboardCheck} color="amber" to="/standards" />
+        <StatCard label="Critical Incidents" value={filteredIncidents.filter(i => i.severity === "Critical").length} icon={AlertCircle} color="red" to="/incidents" />
+        <StatCard label="Overdue Tasks" value={overdueTasks} icon={AlertTriangle} color="red" to="/standards" />
       </div>
 
-      {/* Bottom Section: License Expirations + Recent Incidents + Overdue Tasks */}
+      {/* Bottom Section — every item navigates to its detail page */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* License Expirations */}
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-slate-900">License Expirations</h3>
+            <button onClick={() => navigate('/licenses')} className="text-xs text-indigo-600 hover:text-indigo-800 font-medium">View All →</button>
           </div>
           <div className="space-y-3">
-            {expiringLicenses.map(license => (
-              <div key={license.id} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+            {expiringLicenses.length > 0 ? expiringLicenses.map(license => (
+              <button key={license.id} onClick={() => navigate('/licenses')} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0 w-full text-left hover:bg-slate-50 transition-colors rounded px-1 -mx-1 cursor-pointer">
                 <div>
                   <p className="text-sm font-medium text-slate-900">{license.name}</p>
                   <p className="text-xs text-slate-500">{license.facility}</p>
@@ -162,8 +158,10 @@ export default function Dashboard() {
                     {license.daysLeft < 0 ? `Expired ${Math.abs(license.daysLeft)} days ago` : `${license.daysLeft} days left`}
                   </p>
                 </div>
-              </div>
-            ))}
+              </button>
+            )) : (
+              <p className="text-sm text-slate-400 text-center py-4">No license issues</p>
+            )}
           </div>
         </div>
 
@@ -171,10 +169,11 @@ export default function Dashboard() {
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-slate-900">Recent Incidents</h3>
+            <button onClick={() => navigate('/incidents')} className="text-xs text-indigo-600 hover:text-indigo-800 font-medium">View All →</button>
           </div>
           <div className="space-y-3">
             {recentIncidents.length > 0 ? recentIncidents.map(incident => (
-              <div key={incident.id} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+              <button key={incident.id} onClick={() => navigate('/incidents')} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0 w-full text-left hover:bg-slate-50 transition-colors rounded px-1 -mx-1 cursor-pointer">
                 <div>
                   <p className="text-sm font-medium text-slate-900">{incident.type}</p>
                   <p className="text-xs text-slate-500">{incident.facility} · {incident.date}</p>
@@ -184,7 +183,7 @@ export default function Dashboard() {
                   <br />
                   <StatusBadge status={incident.investigationStatus} />
                 </div>
-              </div>
+              </button>
             )) : (
               <p className="text-sm text-slate-400 text-center py-4">No incidents for selected body</p>
             )}
@@ -195,10 +194,11 @@ export default function Dashboard() {
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-slate-900">Tasks Needing Attention</h3>
+            <button onClick={() => navigate('/standards')} className="text-xs text-indigo-600 hover:text-indigo-800 font-medium">View All →</button>
           </div>
           <div className="space-y-3">
             {attentionTasks.length > 0 ? attentionTasks.slice(0, 5).map(task => (
-              <div key={task.id} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+              <button key={task.id} onClick={() => navigate('/standards')} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0 w-full text-left hover:bg-slate-50 transition-colors rounded px-1 -mx-1 cursor-pointer">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-slate-900 truncate">{task.task || task.title || '—'}</p>
                   <p className="text-xs text-slate-500">{task.assignedTo || task.assignedToRole || '—'} · Due {task.dueDate}</p>
@@ -206,7 +206,7 @@ export default function Dashboard() {
                 <div className="ml-3">
                   <StatusBadge status={task.status} />
                 </div>
-              </div>
+              </button>
             )) : (
               <p className="text-sm text-slate-400 text-center py-4">No tasks for selected body</p>
             )}

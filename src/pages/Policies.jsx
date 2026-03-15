@@ -177,8 +177,18 @@ export default function Policies() {
   ) : files;
 
   const handleSubmit = async (formData) => {
-    if (editItem?.id) await update(editItem.id, formData);
-    else await create(formData);
+    if (editItem?.id) {
+      // Auto-increment version on edit (e.g., "1.0" → "1.1", "2.3" → "2.4")
+      const oldVersion = editItem.version || '1.0';
+      const parts = oldVersion.split('.');
+      const major = parseInt(parts[0]) || 1;
+      const minor = (parseInt(parts[1]) || 0) + 1;
+      formData.version = `${major}.${minor}`;
+      await update(editItem.id, formData);
+    } else {
+      formData.version = formData.version || '1.0';
+      await create(formData);
+    }
     setModalOpen(false);
     setEditItem(null);
   };

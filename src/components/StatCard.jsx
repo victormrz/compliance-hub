@@ -1,4 +1,7 @@
-export default function StatCard({ label, value, icon: Icon, color = 'indigo' }) {
+import { useNavigate } from 'react-router-dom';
+
+export default function StatCard({ label, value, icon: Icon, color = 'indigo', to }) {
+  const navigate = useNavigate();
   const colorMap = {
     indigo: 'text-indigo-600 bg-indigo-50',
     red: 'text-red-600 bg-red-50',
@@ -8,10 +11,13 @@ export default function StatCard({ label, value, icon: Icon, color = 'indigo' })
     slate: 'text-slate-600 bg-slate-50',
   };
 
+  const Wrapper = to ? 'button' : 'div';
+  const clickProps = to ? { onClick: () => navigate(to) } : {};
+
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5 flex items-center justify-between">
+    <Wrapper {...clickProps} className={`bg-white rounded-xl border border-slate-200 p-5 flex items-center justify-between ${to ? 'hover:bg-slate-50 hover:border-indigo-200 transition-colors cursor-pointer' : ''}`}>
       <div>
-        <p className="text-sm text-slate-500">{label}</p>
+        <p className="text-sm text-slate-500 text-left">{label}</p>
         <p className="text-3xl font-bold text-slate-900 mt-1">{value}</p>
       </div>
       {Icon && (
@@ -19,6 +25,6 @@ export default function StatCard({ label, value, icon: Icon, color = 'indigo' })
           <Icon size={20} />
         </div>
       )}
-    </div>
+    </Wrapper>
   );
 }

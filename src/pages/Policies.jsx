@@ -80,12 +80,12 @@ export default function Policies() {
     }
   }, [isAuthenticated]);
 
-  // Fetch files when switching to OneDrive tab
+  // Fetch files on mount (needed for policy-to-document linking on Policy Register tab)
   useEffect(() => {
-    if (tab === 'onedrive' && isAuthenticated && files.length === 0) {
+    if (isAuthenticated && files.length === 0) {
       fetchFiles();
     }
-  }, [tab, isAuthenticated, files.length, fetchFiles]);
+  }, [isAuthenticated, files.length, fetchFiles]);
 
   // Fetch version history for a file
   const handleToggleVersions = async (fileId) => {
@@ -272,7 +272,15 @@ export default function Policies() {
                       <td className="px-5 py-4 text-sm font-mono text-slate-600">{p.policyNumber || '—'}</td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center"><FileText size={14} className="text-indigo-500" /></div>
+                          {linkedFile ? (
+                            <a href={linkedFile.webUrl} target="_blank" rel="noopener noreferrer" title="Open policy document in SharePoint" className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center hover:bg-indigo-200 transition-colors cursor-pointer">
+                              <FileText size={14} className="text-indigo-600" />
+                            </a>
+                          ) : (
+                            <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center" title="No document uploaded">
+                              <FileText size={14} className="text-slate-300" />
+                            </div>
+                          )}
                           <p className="text-sm font-medium text-slate-900">{p.title}</p>
                         </div>
                       </td>
@@ -288,14 +296,7 @@ export default function Policies() {
                       <td className="px-5 py-4"><div className="flex flex-wrap gap-1">{(p.standardRefs || []).map(ref => <span key={ref} className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-mono">{ref}</span>)}</div></td>
                       <td className="px-5 py-4"><StatusBadge status={p.status} /></td>
                       <td className="px-5 py-4">
-                        <div className="flex items-center gap-2">
-                          {linkedFile && (
-                            <a href={linkedFile.webUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700" title="Open document">
-                              <ExternalLink size={14} />
-                            </a>
-                          )}
-                          <button onClick={() => { setEditItem(p); setModalOpen(true); }} className="text-slate-400 hover:text-indigo-600"><Pencil size={14} /></button>
-                        </div>
+                        <button onClick={() => { setEditItem(p); setModalOpen(true); }} className="text-slate-400 hover:text-indigo-600"><Pencil size={14} /></button>
                       </td>
                     </tr>
                   );

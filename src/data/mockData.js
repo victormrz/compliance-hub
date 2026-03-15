@@ -103,19 +103,19 @@ export const crosswalk = seedCrosswalk;
 export const staff = [
   // Salaried
   { id: 1, name: "Victor Rivera", title: "Executive Director", department: "Management", hireDate: "2023-01-15", status: "Active", supervisor: null, credentialsComplete: true, trainingComplete: true, employmentType: "Salaried" },
-  { id: 2, name: "Alison Grigsby", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
-  { id: 3, name: "Amber Ramsay", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 2, name: "Alison Grigsby", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: true, employmentType: "Salaried" },
+  { id: 3, name: "Amber Ramsay", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: true, employmentType: "Salaried" },
   { id: 4, name: "Dave Thomas", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
-  { id: 5, name: "Harold Kantar", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
-  { id: 6, name: "Hillary Nolan", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
-  { id: 7, name: "Jarrod Chase", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 5, name: "Harold Kantar", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: true, employmentType: "Salaried" },
+  { id: 6, name: "Hillary Nolan", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: true, employmentType: "Salaried" },
+  { id: 7, name: "Jarrod Chase", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: true, employmentType: "Salaried" },
   { id: 8, name: "Kara Brown-Flod", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
   { id: 9, name: "Keith Rapp", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
-  { id: 10, name: "Kelsey Hess", title: "Staff", department: "Administrative", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 10, name: "Kelsey Hess", title: "Staff", department: "Administrative", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: true, employmentType: "Salaried" },
   { id: 11, name: "Matthew Otto", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
-  { id: 12, name: "Rebecca Milton", title: "Staff", department: "Administrative", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 12, name: "Rebecca Milton", title: "Staff", department: "Administrative", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: true, employmentType: "Salaried" },
   { id: 13, name: "Tiffany Spradlin", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
-  { id: 14, name: "Laurel Yoder", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
+  { id: 14, name: "Laurel Yoder", title: "Staff", department: "Clinical", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: true, employmentType: "Salaried" },
   { id: 15, name: "Mercedes Hensley", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: true, trainingComplete: false, employmentType: "Salaried" },
   // Hourly
   { id: 16, name: "Carl Quick", title: "Staff", department: "Operations", hireDate: "2024-01-01", status: "Active", supervisor: "Victor Rivera", credentialsComplete: false, trainingComplete: false, employmentType: "Hourly" },
@@ -136,16 +136,69 @@ export const credentials = seedCredentials.map((c, i) => {
   return { id: i + 1, ...c, daysLeft, status };
 });
 
-// ── Training Records (mock — links employees to courses) ──
+// ── Training Records (mock — links employees to courses from seed data) ──
+// Uses actual course names from seeds/training.json so the Training page filter works
 export const trainingRecords = [
-  { id: 1, employee: "Amber Ramsay", course: "HIPAA Privacy & Security", dueDate: "2026-04-15", completedDate: "2026-02-10", status: "Completed", year: "2026" },
-  { id: 2, employee: "Amber Ramsay", course: "42 CFR Part 2 Confidentiality", dueDate: "2026-04-15", completedDate: null, status: "In Progress", year: "2026" },
-  { id: 3, employee: "Dave Thomas", course: "Fire Safety & Emergency Response", dueDate: "2026-03-31", completedDate: null, status: "Overdue", year: "2026" },
-  { id: 4, employee: "Harold Kantar", course: "Suicide Prevention & Assessment", dueDate: "2026-05-01", completedDate: "2026-01-20", status: "Completed", year: "2026" },
-  { id: 5, employee: "Laurel Yoder", course: "CPR/BLS Certification", dueDate: "2026-06-01", completedDate: null, status: "Not Started", year: "2026" },
-  { id: 6, employee: "Matthew Otto", course: "De-Escalation & Crisis Intervention", dueDate: "2026-04-30", completedDate: null, status: "In Progress", year: "2026" },
-  { id: 7, employee: "Rebecca Milton", course: "HIPAA Privacy & Security", dueDate: "2026-04-15", completedDate: "2026-03-01", status: "Completed", year: "2026" },
-  { id: 8, employee: "Tiffany Spradlin", course: "HIPAA Privacy & Security", dueDate: "2026-04-15", completedDate: null, status: "Not Started", year: "2026" },
+  // ── Ethics Training (required: all staff, annual) ──
+  { id: 1, employee: "Victor Rivera", course: "Ethics Training", dueDate: "2026-06-01", completedDate: "2026-01-15", status: "Completed", year: "2026" },
+  { id: 2, employee: "Alison Grigsby", course: "Ethics Training", dueDate: "2026-06-01", completedDate: "2026-02-10", status: "Completed", year: "2026" },
+  { id: 3, employee: "Amber Ramsay", course: "Ethics Training", dueDate: "2026-06-01", completedDate: "2026-02-10", status: "Completed", year: "2026" },
+  { id: 4, employee: "Dave Thomas", course: "Ethics Training", dueDate: "2026-06-01", completedDate: null, status: "In Progress", year: "2026" },
+  { id: 5, employee: "Harold Kantar", course: "Ethics Training", dueDate: "2026-06-01", completedDate: "2026-01-20", status: "Completed", year: "2026" },
+  { id: 6, employee: "Hillary Nolan", course: "Ethics Training", dueDate: "2026-06-01", completedDate: "2026-02-05", status: "Completed", year: "2026" },
+  { id: 7, employee: "Rebecca Milton", course: "Ethics Training", dueDate: "2026-06-01", completedDate: "2026-03-01", status: "Completed", year: "2026" },
+  { id: 8, employee: "Tiffany Spradlin", course: "Ethics Training", dueDate: "2026-06-01", completedDate: null, status: "Not Started", year: "2026" },
+  { id: 9, employee: "Carl Quick", course: "Ethics Training", dueDate: "2026-06-01", completedDate: null, status: "Overdue", year: "2026" },
+  // ── Corporate Compliance Training (required: all staff, annual) ──
+  { id: 10, employee: "Victor Rivera", course: "Corporate Compliance Training", dueDate: "2026-04-15", completedDate: "2026-01-15", status: "Completed", year: "2026" },
+  { id: 11, employee: "Alison Grigsby", course: "Corporate Compliance Training", dueDate: "2026-04-15", completedDate: "2026-02-10", status: "Completed", year: "2026" },
+  { id: 12, employee: "Amber Ramsay", course: "Corporate Compliance Training", dueDate: "2026-04-15", completedDate: null, status: "In Progress", year: "2026" },
+  { id: 13, employee: "Rebecca Milton", course: "Corporate Compliance Training", dueDate: "2026-04-15", completedDate: "2026-03-01", status: "Completed", year: "2026" },
+  { id: 14, employee: "Matthew Otto", course: "Corporate Compliance Training", dueDate: "2026-04-15", completedDate: null, status: "In Progress", year: "2026" },
+  { id: 15, employee: "Mary Henson", course: "Corporate Compliance Training", dueDate: "2026-04-15", completedDate: null, status: "Not Started", year: "2026" },
+  // ── Health and Safety Training (required: all staff, annual) ──
+  { id: 16, employee: "Dave Thomas", course: "Health and Safety Training", dueDate: "2026-03-31", completedDate: null, status: "Overdue", year: "2026" },
+  { id: 17, employee: "Jarrod Chase", course: "Health and Safety Training", dueDate: "2026-03-31", completedDate: "2026-02-15", status: "Completed", year: "2026" },
+  { id: 18, employee: "Kara Brown-Flod", course: "Health and Safety Training", dueDate: "2026-03-31", completedDate: "2026-02-20", status: "Completed", year: "2026" },
+  { id: 19, employee: "Keith Rapp", course: "Health and Safety Training", dueDate: "2026-03-31", completedDate: null, status: "Overdue", year: "2026" },
+  { id: 20, employee: "Laurel Yoder", course: "Health and Safety Training", dueDate: "2026-03-31", completedDate: "2026-01-10", status: "Completed", year: "2026" },
+  { id: 21, employee: "Mercedes Hensley", course: "Health and Safety Training", dueDate: "2026-03-31", completedDate: null, status: "Not Started", year: "2026" },
+  // ── Infection and Communicable Disease Prevention (required: clinical, annual) ──
+  { id: 22, employee: "Amber Ramsay", course: "Infection and Communicable Disease Prevention", dueDate: "2026-05-01", completedDate: "2026-02-10", status: "Completed", year: "2026" },
+  { id: 23, employee: "Harold Kantar", course: "Infection and Communicable Disease Prevention", dueDate: "2026-05-01", completedDate: "2026-01-20", status: "Completed", year: "2026" },
+  { id: 24, employee: "Hillary Nolan", course: "Infection and Communicable Disease Prevention", dueDate: "2026-05-01", completedDate: null, status: "In Progress", year: "2026" },
+  { id: 25, employee: "Tiffany Spradlin", course: "Infection and Communicable Disease Prevention", dueDate: "2026-05-01", completedDate: null, status: "Not Started", year: "2026" },
+  { id: 26, employee: "Laurel Yoder", course: "Infection and Communicable Disease Prevention", dueDate: "2026-05-01", completedDate: "2026-02-05", status: "Completed", year: "2026" },
+  // ── Orientation and Onboarding (required: new hires, one-time) ──
+  { id: 27, employee: "Victor Rivera", course: "Orientation and Onboarding", dueDate: "2023-02-15", completedDate: "2023-01-20", status: "Completed", year: "2023" },
+  { id: 28, employee: "Carl Quick", course: "Orientation and Onboarding", dueDate: "2024-02-01", completedDate: "2024-01-15", status: "Completed", year: "2024" },
+  { id: 29, employee: "Mary Henson", course: "Orientation and Onboarding", dueDate: "2024-02-01", completedDate: "2024-01-15", status: "Completed", year: "2024" },
+  // ── Medication Administration Training (required: clinical, annual) ──
+  { id: 30, employee: "Laurel Yoder", course: "Medication Administration Training", dueDate: "2026-06-01", completedDate: null, status: "Not Started", year: "2026" },
+  { id: 31, employee: "Harold Kantar", course: "Medication Administration Training", dueDate: "2026-06-01", completedDate: "2026-02-15", status: "Completed", year: "2026" },
+  { id: 32, employee: "Kara Brown-Flod", course: "Medication Administration Training", dueDate: "2026-06-01", completedDate: null, status: "In Progress", year: "2026" },
+  // ── Cybersecurity Awareness Training (required: all staff, annual) ──
+  { id: 33, employee: "Victor Rivera", course: "Cybersecurity Awareness Training", dueDate: "2026-07-01", completedDate: "2026-01-15", status: "Completed", year: "2026" },
+  { id: 34, employee: "Rebecca Milton", course: "Cybersecurity Awareness Training", dueDate: "2026-07-01", completedDate: "2026-03-01", status: "Completed", year: "2026" },
+  { id: 35, employee: "Kelsey Hess", course: "Cybersecurity Awareness Training", dueDate: "2026-07-01", completedDate: "2026-02-20", status: "Completed", year: "2026" },
+  { id: 36, employee: "Alison Grigsby", course: "Cybersecurity Awareness Training", dueDate: "2026-07-01", completedDate: null, status: "Not Started", year: "2026" },
+  // ── Behavior Management Techniques (required: clinical, semi-annual) ──
+  { id: 37, employee: "Matthew Otto", course: "Behavior Management Techniques", dueDate: "2026-04-30", completedDate: null, status: "In Progress", year: "2026" },
+  { id: 38, employee: "Hillary Nolan", course: "Behavior Management Techniques", dueDate: "2026-04-30", completedDate: "2026-02-05", status: "Completed", year: "2026" },
+  { id: 39, employee: "Tiffany Spradlin", course: "Behavior Management Techniques", dueDate: "2026-04-30", completedDate: null, status: "Overdue", year: "2026" },
+  // ── Clinical Personnel Competency Training (required: clinical, annual) ──
+  { id: 40, employee: "Amber Ramsay", course: "Clinical Personnel Competency Training", dueDate: "2026-05-15", completedDate: "2026-02-10", status: "Completed", year: "2026" },
+  { id: 41, employee: "Harold Kantar", course: "Clinical Personnel Competency Training", dueDate: "2026-05-15", completedDate: "2026-01-20", status: "Completed", year: "2026" },
+  { id: 42, employee: "Kara Brown-Flod", course: "Clinical Personnel Competency Training", dueDate: "2026-05-15", completedDate: null, status: "In Progress", year: "2026" },
+  { id: 43, employee: "Matthew Otto", course: "Clinical Personnel Competency Training", dueDate: "2026-05-15", completedDate: null, status: "Not Started", year: "2026" },
+  // ── Physical Risk Reduction for Persons Served (required: all staff, annual) ──
+  { id: 44, employee: "Jarrod Chase", course: "Physical Risk Reduction for Persons Served", dueDate: "2026-04-01", completedDate: "2026-02-15", status: "Completed", year: "2026" },
+  { id: 45, employee: "Dave Thomas", course: "Physical Risk Reduction for Persons Served", dueDate: "2026-04-01", completedDate: null, status: "Overdue", year: "2026" },
+  { id: 46, employee: "Kelsey Hess", course: "Physical Risk Reduction for Persons Served", dueDate: "2026-04-01", completedDate: "2026-02-20", status: "Completed", year: "2026" },
+  // ── Security Training (required: all staff, annual) ──
+  { id: 47, employee: "Keith Rapp", course: "Security Training", dueDate: "2026-05-01", completedDate: null, status: "Not Started", year: "2026" },
+  { id: 48, employee: "Mercedes Hensley", course: "Security Training", dueDate: "2026-05-01", completedDate: null, status: "Not Started", year: "2026" },
+  { id: 49, employee: "Carl Quick", course: "Security Training", dueDate: "2026-05-01", completedDate: null, status: "Not Started", year: "2026" },
 ];
 
 // ── Incidents (mock) ──

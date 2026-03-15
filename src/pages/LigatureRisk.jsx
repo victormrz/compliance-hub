@@ -5,13 +5,15 @@ import FormModal from '../components/FormModal';
 import { useSharePointData } from '../hooks/useSharePointData';
 import { formatDate } from '../lib/formatDate';
 
+// Outpatient SUD facility — no bedrooms/residential wings
 const mockAreas = [
-  { id: 1, location: "Client Bedrooms - Wing A", riskLevel: "Medium", items: 4, lastAssessed: "2026-02-15", nextDue: "2026-05-15", capStatus: "In Progress" },
-  { id: 2, location: "Client Bedrooms - Wing B", riskLevel: "Low", items: 2, lastAssessed: "2026-02-15", nextDue: "2026-05-15", capStatus: "Complete" },
-  { id: 3, location: "Bathrooms - All Units", riskLevel: "High", items: 8, lastAssessed: "2026-01-10", nextDue: "2026-04-10", capStatus: "In Progress" },
-  { id: 4, location: "Common Areas", riskLevel: "Low", items: 1, lastAssessed: "2026-02-20", nextDue: "2026-05-20", capStatus: "Complete" },
-  { id: 5, location: "Outdoor Grounds", riskLevel: "Medium", items: 3, lastAssessed: "2026-02-20", nextDue: "2026-05-20", capStatus: "In Progress" },
-  { id: 6, location: "Staff Office Areas", riskLevel: "Low", items: 0, lastAssessed: "2026-02-20", nextDue: "2026-05-20", capStatus: "N/A" },
+  { id: 1, location: "Individual Counseling Offices", riskLevel: "Medium", items: 3, lastAssessed: "2026-02-15", nextDue: "2026-05-15", capStatus: "In Progress" },
+  { id: 2, location: "Group Therapy Room", riskLevel: "Low", items: 1, lastAssessed: "2026-02-15", nextDue: "2026-05-15", capStatus: "Complete" },
+  { id: 3, location: "Client Restrooms", riskLevel: "High", items: 6, lastAssessed: "2026-01-10", nextDue: "2026-04-10", capStatus: "In Progress" },
+  { id: 4, location: "Reception & Waiting Area", riskLevel: "Low", items: 1, lastAssessed: "2026-02-20", nextDue: "2026-05-20", capStatus: "Complete" },
+  { id: 5, location: "Medication Dispensing Area", riskLevel: "Medium", items: 2, lastAssessed: "2026-02-20", nextDue: "2026-05-20", capStatus: "In Progress" },
+  { id: 6, location: "Staff Break Room & Kitchen", riskLevel: "Low", items: 0, lastAssessed: "2026-02-20", nextDue: "2026-05-20", capStatus: "N/A" },
+  { id: 7, location: "Outdoor Grounds & Parking", riskLevel: "Low", items: 1, lastAssessed: "2026-02-20", nextDue: "2026-05-20", capStatus: "Complete" },
 ];
 
 const ligatureFields = [

@@ -87,6 +87,84 @@ function toCamelCase(str) {
     .replace(/^[A-Z]/, c => c.toLowerCase());
 }
 
+// camelCase → PascalCase (hireDate → HireDate)
+function toPascalCase(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// ═══════════════════════════════════════════
+// Reverse Field Mapping: app camelCase → SharePoint PascalCase
+// ═══════════════════════════════════════════
+
+// Build reverse alias map: app key → SharePoint column name
+// For duplicate aliases (e.g., 'name' could be StandardName or LicenseName),
+// we use per-list overrides below.
+const REVERSE_ALIASES = {};
+for (const [spKey, appKey] of Object.entries(FIELD_ALIASES)) {
+  // Only store if not already set (first wins — most specific)
+  if (!REVERSE_ALIASES[appKey]) {
+    REVERSE_ALIASES[appKey] = spKey;
+  }
+}
+
+// Per-list field mappings for ambiguous aliases (e.g., 'name' means different things)
+const LIST_FIELD_OVERRIDES = {
+  Standards: { name: 'StandardName', category: 'Category' },
+  Policies: { series: 'PolicySeries', category: 'Category', name: 'Title' },
+  Credentials: { type: 'CredentialType', number: 'CredentialNumber', name: 'Title' },
+  Licenses: { type: 'LicenseType', name: 'Title' },
+  Personnel: { name: 'Title', title: 'JobTitle' },
+  Incidents: { type: 'Title', date: 'IncidentDate' },
+  Training: { name: 'Title', title: 'Title' },
+  Evidence: { name: 'Title', title: 'Title' },
+  Crosswalk: { category: 'RequirementCategory', name: 'Title', title: 'Title' },
+  ComplianceTasks: { task: 'Title', title: 'Title', name: 'Title' },
+  RegulatoryChanges: { name: 'Title', title: 'Title' },
+  Facilities: { name: 'Title', title: 'Title' },
+  Contracts: { name: 'Title', title: 'Title' },
+  EOCInspections: { name: 'Title', title: 'Title' },
+  LigatureRisk: { name: 'Title', title: 'Title' },
+  DailyStaffing: { name: 'Title', title: 'Title' },
+  TrainingRecords: { name: 'Title', course: 'CourseName', title: 'Title' },
+};
+
+/**
+ * Convert app-side camelCase fields back to SharePoint column names for writes.
+ * - Uses per-list overrides for ambiguous fields
+ * - Falls back to REVERSE_ALIASES
+ * - Falls back to PascalCase conversion
+ * - Converts arrays back to delimited strings
+ */
+function denormalizeFields(fields, listName) {
+  const overrides = LIST_FIELD_OVERRIDES[listName] || {};
+  const out = {};
+
+  for (const [key, value] of Object.entries(fields)) {
+    if (value === null || value === undefined) continue;
+
+    // Determine the SharePoint column name
+    let spKey;
+    if (overrides[key]) {
+      spKey = overrides[key];
+    } else if (REVERSE_ALIASES[key]) {
+      spKey = REVERSE_ALIASES[key];
+    } else {
+      // camelCase → PascalCase as default
+      spKey = toPascalCase(key);
+    }
+
+    // Convert arrays back to delimited strings for SharePoint
+    let finalValue = value;
+    if (Array.isArray(value)) {
+      finalValue = value.join('; ');
+    }
+
+    out[spKey] = finalValue;
+  }
+
+  return out;
+}
+
 function normalizeFields(fields) {
   const out = {};
   for (const [key, value] of Object.entries(fields)) {
@@ -153,18 +231,20 @@ export async function getListItems(listName, options = {}) {
 // Create a new list item
 export async function createListItem(listName, fields) {
   const id = await getSiteId();
+  const spFields = denormalizeFields(fields, listName);
   const result = await graphClient
     .api(`/sites/${id}/lists/${listName}/items`)
-    .post({ fields });
+    .post({ fields: spFields });
   return { id: result.id, ...normalizeFields(result.fields || {}) };
 }
 
 // Update a list item
 export async function updateListItem(listName, itemId, fields) {
   const id = await getSiteId();
+  const spFields = denormalizeFields(fields, listName);
   await graphClient
     .api(`/sites/${id}/lists/${listName}/items/${itemId}/fields`)
-    .patch(fields);
+    .patch(spFields);
   return { id: itemId, ...fields };
 }
 

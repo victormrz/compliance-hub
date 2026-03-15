@@ -46,10 +46,6 @@ export default function Licenses() {
   ) : licensesList;
 
   const handleSubmit = async (formData) => {
-    // Calculate days left
-    const exp = new Date(formData.expirationDate);
-    const now = new Date();
-    const daysLeft = Math.ceil((exp - now) / (1000 * 60 * 60 * 24));
     const processed = { ...formData };
     if (editItem?.id) await update(editItem.id, processed);
     else await create(processed);

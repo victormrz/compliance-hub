@@ -32,7 +32,7 @@ export default function Standards() {
   // Apply global accreditation filter first, then local tab filter, then search
   const globalFiltered = filterByBody(standards);
   const bodyMap = { 'TJC': 'TJC', 'CARF': 'CARF', 'State': 'KY-DBHDID', 'Federal': 'Federal' };
-  const tabFiltered = filter === 'All Standards' ? globalFiltered : globalFiltered.filter(s => s.body === bodyMap[filter]);
+  const tabFiltered = filter === 'All Standards' ? globalFiltered : globalFiltered.filter(s => filter === 'Federal' ? (s.body || '').startsWith('Federal') : s.body === bodyMap[filter]);
   const q = search.toLowerCase();
   const filtered = q ? tabFiltered.filter(s =>
     (s.code || s.title || '').toLowerCase().includes(q) ||
@@ -45,7 +45,7 @@ export default function Standards() {
     'TJC': globalFiltered.filter(s => s.body === 'TJC').length,
     'CARF': globalFiltered.filter(s => s.body === 'CARF').length,
     'State': globalFiltered.filter(s => s.body === 'KY-DBHDID').length,
-    'Federal': globalFiltered.filter(s => s.body === 'Federal').length,
+    'Federal': globalFiltered.filter(s => (s.body || '').startsWith('Federal')).length,
   };
 
   const handleAdd = () => {

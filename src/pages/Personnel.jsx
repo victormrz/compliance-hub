@@ -11,7 +11,7 @@ import { formatDate } from '../lib/formatDate';
 const personnelFields = [
   { key: 'name', label: 'Full Name', type: 'text', required: true, placeholder: 'e.g., Sarah Johnson' },
   { key: 'title', label: 'Job Title', type: 'text', required: true, placeholder: 'e.g., Clinical Director' },
-  { key: 'department', label: 'Department', type: 'select', required: true, options: ['Clinical', 'Nursing', 'Admin', 'Peer Support', 'Dietary', 'Maintenance'] },
+  { key: 'department', label: 'Department', type: 'select', required: true, options: ['Management', 'Clinical', 'Nursing', 'Operations', 'Compliance', 'Peer Support', 'Administrative'] },
   { key: 'phone', label: 'Phone', type: 'text', placeholder: '(555) 123-4567' },
   { key: 'hireDate', label: 'Hire Date', type: 'date', required: true },
   { key: 'supervisor', label: 'Supervisor', type: 'text', placeholder: 'e.g., Dr. Michael Chen' },
@@ -28,7 +28,7 @@ export default function Personnel() {
 
   const q = search.toLowerCase();
   const filteredStaff = q ? staffList.filter(s =>
-    (s.name || '').toLowerCase().includes(q) || (s.title || '').toLowerCase().includes(q) ||
+    (s.name || s.title || '').toLowerCase().includes(q) || (s.jobTitle || '').toLowerCase().includes(q) ||
     (s.department || '').toLowerCase().includes(q) || (s.supervisor || '').toLowerCase().includes(q)
   ) : staffList;
 
@@ -94,11 +94,11 @@ export default function Personnel() {
                 <tr key={s.id || i} className="border-b border-slate-100 hover:bg-slate-50">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white text-xs font-bold">{(s.name || '').split(' ').map(n => n[0]).join('')}</div>
-                      <div><p className="text-sm font-medium text-slate-900">{s.name}</p><p className="text-xs text-slate-500">{s.phone}</p></div>
+                      <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white text-xs font-bold">{(s.name || s.title || '').split(' ').map(n => n[0]).join('')}</div>
+                      <div><p className="text-sm font-medium text-slate-900">{s.name || s.title}</p><p className="text-xs text-slate-500">{s.phone}</p></div>
                     </div>
                   </td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{s.title}</td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{s.jobTitle || '—'}</td>
                   <td className="px-5 py-4"><span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs">{s.department}</span></td>
                   <td className="px-5 py-4 text-sm text-slate-600">{formatDate(s.hireDate)}</td>
                   <td className="px-5 py-4 text-sm text-slate-600">{s.supervisor || '—'}</td>
@@ -113,7 +113,7 @@ export default function Personnel() {
         </div>
       )}
 
-      <FormModal open={modalOpen} onClose={() => { setModalOpen(false); setEditItem(null); }} onSubmit={handleSubmit} title={editItem ? 'Edit Employee' : 'Add Employee'} fields={personnelFields} initialData={editItem ? { ...editItem, credentialsComplete: String(editItem.credentialsComplete), trainingComplete: String(editItem.trainingComplete) } : {}} loading={loading} />
+      <FormModal open={modalOpen} onClose={() => { setModalOpen(false); setEditItem(null); }} onSubmit={handleSubmit} title={editItem ? 'Edit Employee' : 'Add Employee'} fields={personnelFields} initialData={editItem ? { ...editItem, name: editItem.name || editItem.title || '', title: editItem.jobTitle || '', credentialsComplete: String(editItem.credentialsComplete), trainingComplete: String(editItem.trainingComplete) } : {}} loading={loading} />
     </div>
   );
 }

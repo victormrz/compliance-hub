@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Building2, FileKey, Users, ClipboardCheck, AlertCircle, AlertTriangle } from 'lucide-react';
+import { daysUntil } from '../lib/formatDate';
 import StatCard from '../components/StatCard';
 import StatusBadge from '../components/StatusBadge';
 import DataSourceBadge from '../components/DataSourceBadge';
@@ -43,19 +44,31 @@ export default function Dashboard() {
   };
 
   const complianceTasks = tasks.data;
-  const licenses = lic.data;
   const incidents = inc.data;
   const training = trn.data;
   const trainingRecordsList = rec.data;
   const facilitiesList = fac.data;
   const staffList = stf.data;
 
+  // Compute daysLeft + status for licenses (not stored in SharePoint)
+  const licenses = lic.data.map(l => {
+    const name = l.name || l.title || '';
+    const expirationDate = l.expirationDate || null;
+    const left = daysUntil(expirationDate);
+    let status = l.status || 'Active';
+    if (left !== null) {
+      if (left < 0) status = 'Expired';
+      else if (left <= 90) status = 'Critical';
+    }
+    return { ...l, name, daysLeft: left, status };
+  });
+
   // Filter data by selected accreditation body
   const filteredTasks = filterByBody(complianceTasks);
   const filteredIncidents = filterByBody(incidents);
   const filteredTraining = filterByBody(training);
   const filteredTrainingNames = new Set(filteredTraining.map(t => t.course || t.title));
-  const filteredRecords = trainingRecordsList.filter(r => filteredTrainingNames.has(r.course));
+  const filteredRecords = trainingRecordsList.filter(r => filteredTrainingNames.has(r.course || r.courseName));
 
   // Compute filtered stats
   const expiredLicenses = licenses.filter(l => l.status === "Expired").length;
@@ -67,8 +80,8 @@ export default function Dashboard() {
   const totalTasks = filteredTasks.length;
 
   const healthScore = totalTasks > 0
-    ? Math.round(((completedTasks / totalTasks) * 40) + ((1 - (overdueTasks / totalTasks)) * 30) + ((1 - (expiredLicenses / licenses.length)) * 30))
-    : 100;
+    ? Math.min(100, Math.max(0, Math.round(((completedTasks / totalTasks) * 40) + ((1 - (overdueTasks / totalTasks)) * 30) + ((1 - (expiredLicenses / (licenses.length || 1))) * 30))))
+    : (licenses.length > 0 && expiredLicenses > 0) ? Math.round((1 - expiredLicenses / licenses.length) * 100) : 100;
 
   const healthData = [
     { value: healthScore },
@@ -79,7 +92,7 @@ export default function Dashboard() {
   const expiringLicenses = licenses.filter(l => l.status === "Expired" || l.status === "Critical" || (l.daysLeft > 0 && l.daysLeft <= 90))
     .sort((a, b) => a.daysLeft - b.daysLeft);
 
-  const recentIncidents = [...filteredIncidents].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4);
+  const recentIncidents = [...filteredIncidents].sort((a, b) => new Date(b.date || b.incidentDate) - new Date(a.date || a.incidentDate)).slice(0, 4);
   const attentionTasks = filteredTasks.filter(t => t.status !== "Complete")
     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
@@ -200,7 +213,7 @@ export default function Dashboard() {
             {expiringLicenses.length > 0 ? expiringLicenses.map(license => (
               <button key={license.id} onClick={() => navigate('/licenses')} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0 w-full text-left hover:bg-slate-50 transition-colors rounded px-1 -mx-1 cursor-pointer">
                 <div>
-                  <p className="text-sm font-medium text-slate-900">{license.name}</p>
+                  <p className="text-sm font-medium text-slate-900">{license.name || license.title || '—'}</p>
                   <p className="text-xs text-slate-500">{license.facility}</p>
                 </div>
                 <div className="text-right">
@@ -226,8 +239,8 @@ export default function Dashboard() {
             {recentIncidents.length > 0 ? recentIncidents.map(incident => (
               <button key={incident.id} onClick={() => navigate('/incidents')} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0 w-full text-left hover:bg-slate-50 transition-colors rounded px-1 -mx-1 cursor-pointer">
                 <div>
-                  <p className="text-sm font-medium text-slate-900">{incident.type}</p>
-                  <p className="text-xs text-slate-500">{incident.facility} · {incident.date}</p>
+                  <p className="text-sm font-medium text-slate-900">{incident.type || incident.title || '—'}</p>
+                  <p className="text-xs text-slate-500">{incident.facility} · {incident.date || incident.incidentDate || '—'}</p>
                 </div>
                 <div className="text-right space-y-1">
                   <StatusBadge status={incident.severity} />

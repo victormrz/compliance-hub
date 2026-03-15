@@ -15,6 +15,7 @@ import { formatDate } from '../lib/formatDate';
 const policyFields = [
   { key: 'policyNumber', label: 'Policy Number', type: 'text', required: true, placeholder: 'e.g., HR-20 or TS-13' },
   { key: 'title', label: 'Policy Title', type: 'text', required: true, placeholder: 'e.g., Admission and Discharge Policy' },
+  { key: 'series', label: 'Policy Series', type: 'select', required: true, options: ['HR', 'TS'] },
   { key: 'category', label: 'Category', type: 'select', required: true, options: ['Clinical', 'Compliance', 'Safety', 'HR', 'Administrative', 'Financial', 'Technology', 'Rights'] },
   { key: 'version', label: 'Version', type: 'text', required: true, placeholder: 'e.g., 3.1' },
   { key: 'ownerRole', label: 'Responsible Role', type: 'select', required: true, options: ['Executive Director', 'Clinical Director', 'Compliance Officer', 'Safety Officer', 'HR Director', 'Medical Director', 'Nursing Director', 'IT Director', 'QI Coordinator'] },

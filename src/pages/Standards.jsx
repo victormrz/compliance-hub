@@ -13,11 +13,11 @@ const bodies = ['All Standards', 'TJC', 'CARF', 'State', 'Federal'];
 const standardFields = [
   { key: 'code', label: 'Standard Code', type: 'text', required: true, placeholder: 'e.g., HR.01.01.01' },
   { key: 'name', label: 'Standard Name', type: 'text', required: true, placeholder: 'Enter standard name' },
-  { key: 'body', label: 'Accreditation Body', type: 'select', required: true, options: ['CARF', 'TJC', 'KY-DBHDID', 'Federal'] },
+  { key: 'body', label: 'Accreditation Body', type: 'select', required: true, options: ['CARF', 'TJC', 'KY-DBHDID', 'Federal-HIPAA', 'Federal-42CFR2'] },
   { key: 'section', label: 'Section', type: 'text', required: true, placeholder: 'e.g., 1.H or HR' },
   { key: 'category', label: 'Category', type: 'text', required: true, placeholder: 'e.g., Human Resources' },
-  { key: 'requirementType', label: 'Requirement Type', type: 'select', options: ['Documentation', 'Training', 'Inspection', 'Policy', 'Reporting', 'Assessment', 'Review'] },
-  { key: 'status', label: 'Status', type: 'select', required: true, options: ['Met', 'Partially Met', 'Not Met', 'N/A'] },
+  { key: 'requirementType', label: 'Requirement Type', type: 'select', options: ['Documentation', 'Training', 'Inspection', 'Policy', 'Reporting', 'Assessment'] },
+  { key: 'status', label: 'Status', type: 'select', required: true, options: ['Active', 'Inactive', 'Under Review'] },
   { key: 'evidenceRequired', label: 'Evidence Required', type: 'tags', placeholder: 'Policy document, Training records, ...' },
 ];
 

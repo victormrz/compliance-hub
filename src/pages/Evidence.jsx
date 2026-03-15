@@ -18,14 +18,13 @@ const statusColors = {
 };
 
 const evidenceFields = [
-  { key: 'documentName', label: 'Document Name', type: 'text', required: true, placeholder: 'e.g., Cultural Competency Plan 2024' },
-  { key: 'standardCode', label: 'Standard Code', type: 'text', required: true, placeholder: 'e.g., 1.A.5.a or EC.02.06.01' },
-  { key: 'standardName', label: 'Standard Name', type: 'text', placeholder: 'e.g., Cultural competency and diversity plan' },
-  { key: 'status', label: 'Status', type: 'select', required: true, options: ['Current', 'Missing', 'Outdated', 'Under Review'] },
-  { key: 'location', label: 'Location (SharePoint Path)', type: 'text', placeholder: 'e.g., CARF 2025/1A - Leadership' },
-  { key: 'lastUpdated', label: 'Last Updated', type: 'date' },
-  { key: 'uploadedBy', label: 'Uploaded By', type: 'text', placeholder: 'e.g., Victor Rivera' },
-  { key: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Additional notes...' },
+  { key: 'documentName', label: 'Document Name', type: 'text', required: true, placeholder: 'e.g., Fire Drill Report Q1 2026' },
+  { key: 'standardCode', label: 'Standard Reference', type: 'text', required: true, placeholder: 'e.g., CARF 1.K.1' },
+  { key: 'documentType', label: 'Document Type', type: 'select', required: true, options: ['Policy', 'Training Record', 'Form', 'Report', 'Certificate', 'Photo', 'Meeting Minutes', 'Plan', 'Assessment'] },
+  { key: 'policyRef', label: 'Policy Reference', type: 'text', placeholder: 'e.g., HR-001' },
+  { key: 'location', label: 'File Location', type: 'text', placeholder: 'e.g., SharePoint > Evidence > Safety' },
+  { key: 'lastUpdated', label: 'Upload Date', type: 'date' },
+  { key: 'status', label: 'Status', type: 'select', required: true, options: ['Current', 'Outdated', 'Missing', 'Under Review'] },
 ];
 
 export default function Evidence() {
@@ -43,8 +42,9 @@ export default function Evidence() {
   const filtered = q ? statusFiltered.filter(e =>
     (e.documentName || '').toLowerCase().includes(q) ||
     (e.standardCode || '').toLowerCase().includes(q) ||
-    (e.standardName || '').toLowerCase().includes(q) ||
-    (e.uploadedBy || '').toLowerCase().includes(q)
+    (e.documentType || '').toLowerCase().includes(q) ||
+    (e.policyRef || '').toLowerCase().includes(q) ||
+    (e.location || '').toLowerCase().includes(q)
   ) : statusFiltered;
 
   // Status counts
@@ -157,12 +157,12 @@ export default function Evidence() {
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
                 <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Document Name</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Standard Code</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Standard Name</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Standard Ref</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Document Type</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Policy Ref</th>
                 <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Status</th>
                 <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Location</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Last Updated</th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Uploaded By</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase">Upload Date</th>
                 <th className="px-5 py-3"></th>
               </tr>
             </thead>
@@ -177,8 +177,9 @@ export default function Evidence() {
                       <p className="text-sm font-semibold text-slate-900">{item.documentName}</p>
                     </div>
                   </td>
-                  <td className="px-5 py-4 text-sm font-mono text-slate-600">{item.standardCode}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{item.standardName || '—'}</td>
+                  <td className="px-5 py-4 text-sm font-mono text-slate-600">{item.standardCode || '—'}</td>
+                  <td className="px-5 py-4 text-sm text-slate-600">{item.documentType || '—'}</td>
+                  <td className="px-5 py-4 text-sm font-mono text-slate-600">{item.policyRef || '—'}</td>
                   <td className="px-5 py-4">
                     <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[item.status] || 'bg-slate-100 text-slate-600'}`}>
                       {item.status}
@@ -186,7 +187,6 @@ export default function Evidence() {
                   </td>
                   <td className="px-5 py-4 text-sm text-slate-500 font-mono">{item.location || '—'}</td>
                   <td className="px-5 py-4 text-sm text-slate-600">{formatDate(item.lastUpdated)}</td>
-                  <td className="px-5 py-4 text-sm text-slate-600">{item.uploadedBy || '—'}</td>
                   <td className="px-5 py-4">
                     <div className="flex gap-2">
                       <button onClick={() => handleEdit(item)} className="text-slate-400 hover:text-indigo-600"><Pencil size={14} /></button>

@@ -14,17 +14,16 @@ const bodyTabs = ['All Changes', 'TJC', 'CARF', 'State', 'Federal'];
 
 const changeFields = [
   { key: 'date', label: 'Effective Date', type: 'date', required: true },
-  { key: 'body', label: 'Regulatory Body', type: 'select', required: true, options: ['The Joint Commission (TJC)', 'CARF International', 'State Regulations', 'Federal (HIPAA)'] },
-  { key: 'changeType', label: 'Change Type', type: 'select', required: true, options: ['New Requirement', 'Standard Revision', 'Regulation Amendment', 'Clarification', 'Rule Change', 'Guidance Update'] },
+  { key: 'body', label: 'Regulatory Body', type: 'select', required: true, options: ['CARF', 'TJC', 'KY-DBHDID', 'Federal-HIPAA', 'Federal-42CFR2'] },
+  { key: 'changeType', label: 'Change Type', type: 'select', required: true, options: ['Standard Revision', 'New Requirement', 'Regulation Amendment', 'Clarification', 'Rule Change'] },
   { key: 'title', label: 'Title', type: 'text', required: true, placeholder: 'Brief title of the change' },
   { key: 'description', label: 'Description', type: 'textarea', required: true, placeholder: 'Describe the regulatory change and its implications' },
   { key: 'impactedStandards', label: 'Impacted Standards', type: 'tags', placeholder: 'e.g., EC.02.06.01, 1.A.4' },
   { key: 'actionRequired', label: 'Action Required', type: 'textarea', required: true, placeholder: 'Steps needed to comply with this change' },
   { key: 'dueDate', label: 'Compliance Due Date', type: 'date', required: true },
-  { key: 'assignedTo', label: 'Assigned To', type: 'text', required: true, placeholder: 'Person responsible' },
+  { key: 'assignedTo', label: 'Assigned To', type: 'select', required: true, options: ['Executive Director', 'Clinical Director', 'Compliance Officer', 'Safety Officer', 'HR Director', 'Medical Director', 'Nursing Director', 'IT Director', 'QI Coordinator'] },
   { key: 'priority', label: 'Priority', type: 'select', required: true, options: ['Critical', 'High', 'Medium', 'Low'] },
-  { key: 'status', label: 'Status', type: 'select', required: true, options: ['Not Started', 'In Progress', 'Complete', 'Deferred'] },
-  { key: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Additional context or documentation references' },
+  { key: 'status', label: 'Status', type: 'select', required: true, options: ['Not Started', 'In Progress', 'Complete'] },
 ];
 
 const priorityColors = {
@@ -44,9 +43,9 @@ export default function RegulatoryChanges() {
 
   // Filter by body tab
   const bodyMap = {
-    'TJC': 'Joint Commission',
+    'TJC': 'TJC',
     'CARF': 'CARF',
-    'State': 'State',
+    'State': 'KY-DBHDID',
     'Federal': 'Federal',
   };
   const tabFiltered = tab === 'All Changes' ? changes : changes.filter(c => (c.body || '').includes(bodyMap[tab]));
@@ -75,10 +74,10 @@ export default function RegulatoryChanges() {
   }), [changes]);
 
   const bodyCounts = useMemo(() => ({
-    'TJC': changes.filter(c => (c.body || '').includes('Joint Commission')).length,
+    'TJC': changes.filter(c => (c.body || '').includes('TJC')).length,
     'CARF': changes.filter(c => (c.body || '').includes('CARF')).length,
-    'State': changes.filter(c => (c.body || '').includes('State')).length,
-    'Federal': changes.filter(c => (c.body || '').includes('Federal') || (c.body || '').includes('HIPAA')).length,
+    'State': changes.filter(c => (c.body || '').includes('KY-DBHDID')).length,
+    'Federal': changes.filter(c => (c.body || '').includes('Federal')).length,
   }), [changes]);
 
   const handleSubmit = async (formData) => {
@@ -190,7 +189,7 @@ export default function RegulatoryChanges() {
                       </span>
                       <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs">{change.changeType}</span>
                       <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-medium">
-                        {(change.body || '').includes('Joint') ? 'TJC' : (change.body || '').includes('CARF') ? 'CARF' : (change.body || '').includes('State') ? 'State' : 'Federal'}
+                        {change.body || '—'}
                       </span>
                       <StatusBadge status={change.status} />
                     </div>
@@ -240,12 +239,6 @@ export default function RegulatoryChanges() {
                   </div>
                 </div>
 
-                {change.notes && (
-                  <div className="mt-3 pt-3 border-t border-slate-100">
-                    <p className="text-[10px] text-slate-400 uppercase font-semibold mb-1">Notes</p>
-                    <p className="text-xs text-slate-500 italic">{change.notes}</p>
-                  </div>
-                )}
               </div>
             );
           })}

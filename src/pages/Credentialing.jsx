@@ -12,7 +12,7 @@ import { formatDate, daysUntil } from '../lib/formatDate';
 
 const credentialFields = [
   { key: 'employee', label: 'Employee', type: 'text', required: true, placeholder: 'e.g., Dr. Michael Chen' },
-  { key: 'type', label: 'Credential Type', type: 'select', required: true, options: ['LPCC', 'LCSW', 'LCADC', 'LPCA', 'APRN', 'CSW', 'CADC', 'TCM', 'RN', 'LPN', 'MD/DO', 'DEA', 'NPI', 'Board Cert', 'Peer Support', 'CPR/BLS', 'CAQH', 'Medicare', 'Medicaid', 'COI', 'CLIA', 'EIN'] },
+  { key: 'type', label: 'Credential Type', type: 'select', required: true, options: ['LPCC', 'LCSW', 'RN', 'LPN', 'MD/DO', 'DEA', 'NPI', 'Board Cert', 'Peer Support', 'CPR/BLS', 'CAQH', 'Medicare', 'Medicaid'] },
   { key: 'issuingBody', label: 'Issuing Body', type: 'text', required: true, placeholder: 'e.g., KY Board of Medical Licensure' },
   { key: 'number', label: 'Credential Number', type: 'text', required: true, placeholder: 'e.g., KY-12345' },
   { key: 'expirationDate', label: 'Expiration Date', type: 'date' },

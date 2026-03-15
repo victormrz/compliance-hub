@@ -11,10 +11,10 @@ import { formatDate, daysUntil } from '../lib/formatDate';
 const licenseFields = [
   { key: 'name', label: 'License Name', type: 'text', required: true, placeholder: 'e.g., AODE License' },
   { key: 'facility', label: 'Facility', type: 'text', required: true, placeholder: 'e.g., Main Campus' },
-  { key: 'type', label: 'License Type', type: 'select', required: true, options: ['State License', 'AODE', 'BHSO', 'CLIA', 'DEA', 'COI', 'Fire Marshal', 'Food Service', 'Safety Permit', 'Health Permit', 'Business License', 'Accreditation'] },
+  { key: 'type', label: 'License Type', type: 'select', required: true, options: ['State License', 'Accreditation', 'Safety Permit', 'Health Permit', 'Federal License', 'Business License'] },
   { key: 'issueDate', label: 'Issue Date', type: 'date', required: true },
   { key: 'expirationDate', label: 'Expiration Date', type: 'date', required: true },
-  { key: 'status', label: 'Status', type: 'select', required: true, options: ['Active', 'Pending', 'Critical', 'Expired'] },
+  { key: 'status', label: 'Status', type: 'select', required: true, options: ['Active', 'Critical', 'Expired'] },
 ];
 
 export default function Licenses() {
@@ -50,7 +50,7 @@ export default function Licenses() {
     const exp = new Date(formData.expirationDate);
     const now = new Date();
     const daysLeft = Math.ceil((exp - now) / (1000 * 60 * 60 * 24));
-    const processed = { ...formData, daysLeft };
+    const processed = { ...formData };
     if (editItem?.id) await update(editItem.id, processed);
     else await create(processed);
     setModalOpen(false);

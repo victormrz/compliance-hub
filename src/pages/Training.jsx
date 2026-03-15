@@ -11,12 +11,12 @@ import { formatDate } from '../lib/formatDate';
 
 const trainingFields = [
   { key: 'course', label: 'Course Name', type: 'text', required: true, placeholder: 'e.g., HIPAA Privacy & Security' },
-  { key: 'category', label: 'Category', type: 'select', required: true, options: ['Compliance', 'Clinical', 'Safety', 'HR', 'Leadership'] },
-  { key: 'frequency', label: 'Frequency', type: 'select', required: true, options: ['Annual', 'Semi-Annual', 'Quarterly', 'One-Time', 'As Needed'] },
+  { key: 'category', label: 'Category', type: 'select', required: true, options: ['Safety', 'Clinical', 'Compliance', 'HR', 'Leadership', 'Technology'] },
+  { key: 'frequency', label: 'Frequency', type: 'select', required: true, options: ['Orientation Only', 'Orientation and Annually', 'Annual', 'Initial and Ongoing', 'As Needed', 'None Specified'] },
   { key: 'providedTo', label: 'Provided To', type: 'select', required: true, options: ['Personnel', 'Persons Served', 'Personnel and Persons Served', 'Volunteers', 'All Stakeholders'] },
   { key: 'competencyBased', label: 'Competency-Based', type: 'select', required: true, options: ['Yes', 'No'] },
   { key: 'duration', label: 'Duration', type: 'text', placeholder: 'e.g., 2 hours' },
-  { key: 'standardRefs', label: 'Standard References', type: 'tags', placeholder: 'HR.01.04.01, EC.02.01.01' },
+  { key: 'standardRef', label: 'Standard Reference', type: 'text', placeholder: 'e.g., HR.01.04.01' },
   { key: 'status', label: 'Status', type: 'select', required: true, options: ['Active', 'Draft', 'Archived'] },
 ];
 
@@ -36,15 +36,19 @@ export default function Training() {
   const q = search.toLowerCase();
   const filteredCourses = q ? bodyFilteredCourses.filter(t =>
     (t.course || t.title || t.name || '').toLowerCase().includes(q) || (t.category || '').toLowerCase().includes(q) ||
-    (t.standardRefs || []).some(r => r.toLowerCase().includes(q))
+    (t.standardRef || '').toLowerCase().includes(q)
   ) : bodyFilteredCourses;
   const filteredRecords = q ? bodyFilteredRecords.filter(r =>
     (r.employee || '').toLowerCase().includes(q) || (r.course || '').toLowerCase().includes(q)
   ) : bodyFilteredRecords;
 
   const handleSubmit = async (formData) => {
-    if (editItem?.id) await update(editItem.id, formData);
-    else await create(formData);
+    const processed = {
+      ...formData,
+      competencyBased: formData.competencyBased === 'Yes' || formData.competencyBased === true,
+    };
+    if (editItem?.id) await update(editItem.id, processed);
+    else await create(processed);
     setModalOpen(false);
     setEditItem(null);
   };
@@ -110,9 +114,7 @@ export default function Training() {
                     <td className="px-5 py-4 text-sm text-slate-600">{t.frequency || '—'}</td>
                     <td className="px-5 py-4 text-sm text-slate-600">{t.duration || '—'}</td>
                     <td className="px-5 py-4">
-                      <div className="flex flex-wrap gap-1">
-                        {(t.standardRefs || []).map(ref => <span key={ref} className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-mono">{ref}</span>)}
-                      </div>
+                      <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-mono">{t.standardRef || '—'}</span>
                     </td>
                     <td className="px-5 py-4"><StatusBadge status={t.status} /></td>
                     <td className="px-5 py-4"><button onClick={() => { setEditItem(t); setModalOpen(true); }} className="text-slate-400 hover:text-indigo-600"><Pencil size={14} /></button></td>

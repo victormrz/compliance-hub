@@ -8,8 +8,8 @@ import { useAccreditation } from '../hooks/useAccreditation';
 import { useSharePointData } from '../hooks/useSharePointData';
 
 const categories = [
-  'All Categories', 'Leadership', 'Health & Safety', 'Workforce', 'Rights',
-  'Technology', 'Financial', 'Risk Management', 'Clinical', 'Documentation', 'Performance',
+  'All Categories', 'Safety', 'Clinical', 'HR', 'Privacy',
+  'Documentation', 'Quality', 'Rights', 'Access',
 ];
 
 const crosswalkFields = [
@@ -20,7 +20,7 @@ const crosswalkFields = [
   { key: 'federalRegulation', label: 'Federal Regulation', type: 'text', placeholder: 'e.g., 42 CFR 2.31' },
   { key: 'policyRef', label: 'Policy Reference', type: 'text', placeholder: 'e.g., HR-20' },
   { key: 'trainingRef', label: 'Training Reference', type: 'text', placeholder: 'e.g., Health and Safety Training' },
-  { key: 'category', label: 'Category', type: 'select', required: true, options: ['Leadership', 'Health & Safety', 'Workforce', 'Rights', 'Technology', 'Financial', 'Risk Management', 'Clinical', 'Documentation', 'Performance'] },
+  { key: 'category', label: 'Category', type: 'select', required: true, options: ['Safety', 'Clinical', 'HR', 'Privacy', 'Documentation', 'Quality', 'Rights', 'Access'] },
 ];
 
 export default function Crosswalk() {

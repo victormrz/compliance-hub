@@ -44,7 +44,6 @@ const ARRAY_FIELDS = new Set([
 // the semantic mapping (e.g., Credentialing uses c.employee which comes
 // from the Employee column).
 const FIELD_ALIASES = {
-  StandardName: 'name',
   RequirementCategory: 'category',
   PolicySeries: 'series',
   CredentialType: 'type',
@@ -107,25 +106,43 @@ for (const [spKey, appKey] of Object.entries(FIELD_ALIASES)) {
   }
 }
 
-// Per-list field mappings for ambiguous aliases (e.g., 'name' means different things)
+// Per-list read aliases: after normalizeFields(), add semantic keys pages expect.
+// These ADD new keys — they never overwrite existing normalized keys.
+const LIST_READ_ALIASES = {
+  Standards: { title: 'code' },
+  Personnel: { title: 'name' },
+  Credentials: { title: 'employee' },
+  Incidents: { title: 'type', incidentDate: 'date' },
+  Training: { title: 'course' },
+  TrainingRecords: { title: 'employee', courseName: 'course' },
+  Facilities: { title: 'name', facilityType: 'type', licenseNumber: 'license' },
+  EOCInspections: { title: 'name' },
+  LigatureRisk: { title: 'location', assessmentDate: 'lastAssessed', status: 'capStatus' },
+  DailyStaffing: { shiftDate: 'date', clientCount: 'clients', clinicalStaff: 'clinical', nursingStaff: 'nursing', peerSupport: 'peers', ratioMet: 'compliant' },
+  RegulatoryChanges: { changeDate: 'date', assignedToRole: 'assignedTo' },
+  Evidence: { title: 'documentName', standardRef: 'standardCode', fileLocation: 'location', uploadDate: 'lastUpdated' },
+};
+
+// Per-list field mappings for writes (app camelCase → SharePoint column names).
+// null = skip field (computed/client-only, doesn't exist in SharePoint).
 const LIST_FIELD_OVERRIDES = {
-  Standards: { name: 'StandardName', category: 'Category' },
+  Standards: { name: 'StandardName', category: 'Category', code: 'Title' },
   Policies: { series: 'PolicySeries', category: 'Category', name: 'Title' },
-  Credentials: { type: 'CredentialType', number: 'CredentialNumber', name: 'Title' },
-  Licenses: { type: 'LicenseType', name: 'Title' },
+  Credentials: { type: 'CredentialType', number: 'CredentialNumber', name: 'Title', employee: 'Title' },
+  Licenses: { type: 'LicenseType', name: 'Title', daysLeft: null },
   Personnel: { name: 'Title', title: 'JobTitle' },
   Incidents: { type: 'Title', date: 'IncidentDate' },
-  Training: { name: 'Title', title: 'Title' },
-  Evidence: { name: 'Title', title: 'Title' },
-  Crosswalk: { category: 'RequirementCategory', name: 'Title', title: 'Title' },
+  Training: { name: 'Title', title: 'Title', course: 'Title', category: 'Category', standardRefs: 'StandardRef' },
+  TrainingRecords: { name: 'Title', course: 'CourseName', title: 'Title', employee: 'Title' },
+  Evidence: { name: 'Title', title: 'Title', documentName: 'Title', standardCode: 'StandardRef', location: 'FileLocation', lastUpdated: 'UploadDate', uploadedBy: null, notes: null, standardName: null },
+  Crosswalk: { category: 'RequirementCategory', name: 'Title', title: 'Title', carfStandard: 'CARFStandard', tjcStandard: 'TJCStandard' },
   ComplianceTasks: { task: 'Title', title: 'Title', name: 'Title' },
-  RegulatoryChanges: { name: 'Title', title: 'Title' },
+  RegulatoryChanges: { name: 'Title', title: 'Title', date: 'ChangeDate', assignedTo: 'AssignedToRole', notes: null },
   Facilities: { name: 'Title', title: 'Title' },
   Contracts: { name: 'Title', title: 'Title' },
-  EOCInspections: { name: 'Title', title: 'Title' },
-  LigatureRisk: { name: 'Title', title: 'Title' },
-  DailyStaffing: { name: 'Title', title: 'Title' },
-  TrainingRecords: { name: 'Title', course: 'CourseName', title: 'Title' },
+  EOCInspections: { name: 'Title', title: 'Title', lastDone: 'InspectionDate', frequency: null, nextDue: null },
+  LigatureRisk: { name: 'Title', title: 'Title', location: 'Title', lastAssessed: 'AssessmentDate', capStatus: 'Status', items: null, nextDue: null },
+  DailyStaffing: { name: 'Title', title: 'Title', date: 'ShiftDate', clients: 'ClientCount', clinical: 'ClinicalStaff', nursing: 'NursingStaff', peers: 'PeerSupport', compliant: 'RatioMet', ratio: null, required: null },
 };
 
 /**
@@ -144,7 +161,8 @@ function denormalizeFields(fields, listName) {
 
     // Determine the SharePoint column name
     let spKey;
-    if (overrides[key]) {
+    if (key in overrides) {
+      if (overrides[key] === null) continue; // Skip client-only fields
       spKey = overrides[key];
     } else if (REVERSE_ALIASES[key]) {
       spKey = REVERSE_ALIASES[key];
@@ -222,10 +240,18 @@ export async function getListItems(listName, options = {}) {
   if (top) request = request.top(top);
 
   const result = await request.get();
-  return result.value.map(item => ({
-    id: item.id,
-    ...normalizeFields(item.fields || {}),
-  }));
+  const readAliases = LIST_READ_ALIASES[listName];
+  return result.value.map(item => {
+    const normalized = normalizeFields(item.fields || {});
+    if (readAliases) {
+      for (const [from, to] of Object.entries(readAliases)) {
+        if (normalized[from] !== undefined && normalized[to] === undefined) {
+          normalized[to] = normalized[from];
+        }
+      }
+    }
+    return { id: item.id, ...normalized };
+  });
 }
 
 // Create a new list item

@@ -7,12 +7,13 @@ import { useSharePointData } from '../hooks/useSharePointData';
 import { formatDate } from '../lib/formatDate';
 
 const staffingFields = [
-  { key: 'date', label: 'Date', type: 'date', required: true },
-  { key: 'shift', label: 'Shift', type: 'select', required: true, options: ['Day (7a-3p)', 'Evening (3p-11p)', 'Night (11p-7a)'] },
-  { key: 'clients', label: 'Client Census', type: 'number', required: true },
+  { key: 'date', label: 'Shift Date', type: 'date', required: true },
+  { key: 'shift', label: 'Shift', type: 'select', required: true, options: ['Day', 'Evening', 'Night'] },
+  { key: 'clients', label: 'Client Count', type: 'number', required: true },
   { key: 'clinical', label: 'Clinical Staff', type: 'number', required: true },
   { key: 'nursing', label: 'Nursing Staff', type: 'number', required: true },
-  { key: 'peers', label: 'Peer Support Staff', type: 'number', required: true },
+  { key: 'peers', label: 'Peer Support', type: 'number', required: true },
+  { key: 'notes', label: 'Notes', type: 'textarea' },
 ];
 
 export default function DailyStaffing() {
@@ -34,8 +35,6 @@ export default function DailyStaffing() {
       clinical: Number(formData.clinical) || 0,
       nursing: Number(formData.nursing) || 0,
       peers: Number(formData.peers) || 0,
-      ratio: `1:${ratioVal}`,
-      required: '1:8',
       compliant: totalStaff > 0 ? (clients / totalStaff) <= 8 : false,
     };
     if (editItem?.id) await update(editItem.id, processed);

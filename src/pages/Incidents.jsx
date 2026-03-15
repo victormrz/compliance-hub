@@ -13,10 +13,10 @@ const incidentFields = [
   { key: 'date', label: 'Date', type: 'date', required: true },
   { key: 'type', label: 'Incident Type', type: 'select', required: true, options: ['Fall', 'Medication Error', 'Behavioral', 'Elopement', 'Property Damage', 'AMA Discharge', 'Other'] },
   { key: 'facility', label: 'Facility', type: 'text', required: true, placeholder: 'Main Campus' },
-  { key: 'severity', label: 'Severity', type: 'select', required: true, options: ['Critical', 'High', 'Medium', 'Low'] },
+  { key: 'severity', label: 'Severity', type: 'select', required: true, options: ['Minor', 'Moderate', 'Critical'] },
   { key: 'reportedBy', label: 'Reported By', type: 'text', required: true },
   { key: 'description', label: 'Description', type: 'textarea', required: true, placeholder: 'Describe the incident...' },
-  { key: 'investigationStatus', label: 'Investigation Status', type: 'select', options: ['Under Review', 'RCA In Progress', 'CAP Submitted', 'Resolved', 'Closed'] },
+  { key: 'investigationStatus', label: 'Investigation Status', type: 'select', options: ['Under Review', 'RCA In Progress', 'Resolved', 'Closed'] },
   { key: 'standardRef', label: 'Related Standard', type: 'text', placeholder: 'e.g., PC.01.02.01' },
 ];
 
